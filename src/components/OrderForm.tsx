@@ -30,7 +30,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
   const [openCombobox, setOpenCombobox] = useState<number | null>(null);
-  const itemsContainerRef = useRef<HTMLDivElement>(null);
+  const lastItemRef = useRef<HTMLDivElement>(null);
 
   // Update form when editingOrder changes
   useEffect(() => {
@@ -49,12 +49,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
 
   const addItem = () => {
     setItems([...items, { product: "", quantity: 1, unitPrice: 0, total: 0 }]);
-    // Scroll to bottom after adding item (mobile UX improvement)
+    // Scroll to last item after adding (mobile UX improvement)
     setTimeout(() => {
-      if (itemsContainerRef.current) {
-        itemsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      if (lastItemRef.current) {
+        lastItemRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       }
-    }, 100);
+    }, 150);
   };
 
   const removeItem = (index: number) => {
@@ -237,9 +237,13 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
               </Button>
             </div>
 
-            <div className="space-y-3" ref={itemsContainerRef}>
+            <div className="space-y-3">
               {items.map((item, index) => (
-                <Card key={index} className="border-border/50 bg-muted/30">
+                <Card 
+                  key={index} 
+                  ref={index === items.length - 1 ? lastItemRef : null}
+                  className="border-border/50 bg-muted/30"
+                >
                   <CardContent className="pt-4">
                     <div className="grid grid-cols-12 gap-3">
                       <div className="col-span-12 sm:col-span-5">
