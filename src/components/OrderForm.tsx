@@ -94,8 +94,8 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!customerName.trim() || !phoneNumber.trim()) {
-      toast.error("Veuillez remplir tous les champs client");
+    if (!customerName.trim()) {
+      toast.error("Veuillez remplir le nom du client");
       return;
     }
 
@@ -174,7 +174,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Numéro de Téléphone</Label>
+                <Label htmlFor="phoneNumber">Numéro de Téléphone (optionnel)</Label>
                 <Input
                   id="phoneNumber"
                   type="tel"
