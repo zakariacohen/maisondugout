@@ -3,15 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Order, OrderItem } from "@/pages/Index";
 import { useProducts } from "@/hooks/useProducts";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -31,9 +26,6 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState(editingOrder?.customerName || "");
   const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || "");
-  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
-    editingOrder?.deliveryDate ? new Date(editingOrder.deliveryDate) : undefined
-  );
   const [items, setItems] = useState<OrderItem[]>(
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
@@ -43,12 +35,10 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (editingOrder) {
       setCustomerName(editingOrder.customerName);
       setPhoneNumber(editingOrder.phoneNumber);
-      setDeliveryDate(editingOrder.deliveryDate ? new Date(editingOrder.deliveryDate) : undefined);
       setItems(editingOrder.items);
     } else {
       setCustomerName("");
       setPhoneNumber("");
-      setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
   }, [editingOrder]);
@@ -118,7 +108,6 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       date: editingOrder?.date || new Date(),
       delivered: editingOrder?.delivered || false,
       deliveryImageUrl: editingOrder?.deliveryImageUrl,
-      deliveryDate: deliveryDate,
     };
 
     // Check if we're updating an existing order
@@ -134,7 +123,6 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (!editingOrder) {
       setCustomerName("");
       setPhoneNumber("");
-      setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
   };
@@ -185,34 +173,6 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="transition-all focus:shadow-sm"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="deliveryDate">Date de Livraison Prévue</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="deliveryDate"
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !deliveryDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {deliveryDate ? format(deliveryDate, "PPP", { locale: fr }) : "Sélectionner une date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={deliveryDate}
-                      onSelect={setDeliveryDate}
-                      initialFocus
-                      className="pointer-events-auto"
-                      locale={fr}
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
           </div>

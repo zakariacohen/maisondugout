@@ -28,7 +28,6 @@ export const useOrders = () => {
         total: order.total,
         delivered: order.delivered,
         deliveryImageUrl: order.delivery_image_url,
-        deliveryDate: order.delivery_date ? new Date(order.delivery_date) : undefined,
         date: new Date(order.created_at),
         items: itemsData
           .filter((item) => item.order_id === order.id)
@@ -54,7 +53,6 @@ export const useOrders = () => {
             phone_number: order.phoneNumber,
             total: order.total,
             delivered: order.delivered,
-            delivery_date: order.deliveryDate?.toISOString(),
           },
         ])
         .select()
@@ -92,7 +90,6 @@ export const useOrders = () => {
       phoneNumber,
       items,
       total,
-      deliveryDate,
     }: {
       orderId: string;
       delivered?: boolean;
@@ -101,7 +98,6 @@ export const useOrders = () => {
       phoneNumber?: string;
       items?: OrderItem[];
       total?: number;
-      deliveryDate?: Date;
     }) => {
       const updateData: any = {};
       if (delivered !== undefined) updateData.delivered = delivered;
@@ -110,7 +106,6 @@ export const useOrders = () => {
       if (customerName !== undefined) updateData.customer_name = customerName;
       if (phoneNumber !== undefined) updateData.phone_number = phoneNumber;
       if (total !== undefined) updateData.total = total;
-      if (deliveryDate !== undefined) updateData.delivery_date = deliveryDate.toISOString();
 
       const { error: orderError } = await supabase
         .from("orders")
