@@ -27,16 +27,40 @@ export interface OrderItem {
 
 const Index = () => {
   const [view, setView] = useState<"form" | "list" | "products">("form");
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
 
   const handleAddOrder = async (order: Order) => {
     try {
       await addOrder(order);
       setView("list");
+      setEditingOrder(null);
       toast.success("Commande ajoutée avec succès");
     } catch (error) {
       toast.error("Erreur lors de l'ajout de la commande");
     }
+  };
+
+  const handleUpdateOrder = async (order: Order) => {
+    try {
+      await updateOrder({
+        orderId: order.id,
+        customerName: order.customerName,
+        phoneNumber: order.phoneNumber,
+        items: order.items,
+        total: order.total,
+      });
+      setView("list");
+      setEditingOrder(null);
+      toast.success("Commande modifiée avec succès");
+    } catch (error) {
+      toast.error("Erreur lors de la modification de la commande");
+    }
+  };
+
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setView("form");
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -116,13 +140,22 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 md:py-8">
         <div className="max-w-4xl mx-auto">
           {view === "form" ? (
-            <OrderForm onAddOrder={handleAddOrder} />
+            <OrderForm 
+              onAddOrder={handleAddOrder}
+              onUpdateOrder={handleUpdateOrder}
+              editingOrder={editingOrder}
+              onCancelEdit={() => {
+                setEditingOrder(null);
+                setView("list");
+              }}
+            />
           ) : view === "list" ? (
             <OrderList 
               orders={orders} 
               onDeleteOrder={handleDeleteOrder}
               onToggleDelivered={handleToggleDelivered}
               onImageUpload={handleImageUpload}
+              onEditOrder={handleEditOrder}
               isLoading={isLoading}
             />
           ) : (

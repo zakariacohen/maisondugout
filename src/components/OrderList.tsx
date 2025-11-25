@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon, MessageCircle } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon, MessageCircle, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import { useState } from "react";
@@ -23,10 +23,11 @@ interface OrderListProps {
   onDeleteOrder: (orderId: string) => void;
   onToggleDelivered: (orderId: string, currentStatus: boolean) => void;
   onImageUpload: (orderId: string, file: File) => void;
+  onEditOrder: (order: Order) => void;
   isLoading?: boolean;
 }
 
-export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpload, isLoading }: OrderListProps) => {
+export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpload, onEditOrder, isLoading }: OrderListProps) => {
   const [selectedOrderForImage, setSelectedOrderForImage] = useState<string | null>(null);
   
   const handleDelete = (orderId: string, customerName: string) => {
@@ -160,6 +161,15 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
                   title="Partager sur WhatsApp"
                 >
                   <MessageCircle className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEditOrder(order)}
+                  className="hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                  title="Modifier"
+                >
+                  <Pencil className="w-4 h-4" />
                 </Button>
                 {!order.delivered && (
                   <Button
