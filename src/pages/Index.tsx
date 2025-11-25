@@ -106,81 +106,81 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm border-b border-border shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="container mx-auto px-2 sm:px-4 py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-shrink">
               <img 
                 src={logo} 
                 alt="Maison du Goût" 
-                className="w-12 h-12 object-contain"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain flex-shrink-0"
               />
-              <div>
-                <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-xl md:text-2xl font-serif font-bold text-primary truncate">
                   Maison du Goût
                 </h1>
-                <p className="text-sm text-muted-foreground">Gestion des Commandes</p>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Gestion des Commandes</p>
               </div>
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-1 sm:gap-2 items-center flex-shrink-0">
               <Button
                 variant={view === "form" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("form")}
-                className="transition-all"
+                className="transition-all px-2 sm:px-4"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Nouvelle</span>
+                <Plus className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">Nouvelle</span>
               </Button>
               <Button
                 variant={view === "pending" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("pending")}
-                className="transition-all"
+                className="transition-all px-2 sm:px-4"
               >
-                <Clock className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">
+                <Clock className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">
                   En attente ({orders.filter(o => !o.delivered).length})
                 </span>
-                <span className="sm:hidden">{orders.filter(o => !o.delivered).length}</span>
+                <span className="md:hidden">{orders.filter(o => !o.delivered).length}</span>
               </Button>
               <Button
                 variant={view === "delivered" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("delivered")}
-                className="transition-all"
+                className="transition-all px-2 sm:px-4"
               >
-                <CheckCircle2 className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">
+                <CheckCircle2 className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">
                   Livrées ({orders.filter(o => o.delivered).length})
                 </span>
-                <span className="sm:hidden">{orders.filter(o => o.delivered).length}</span>
+                <span className="md:hidden">{orders.filter(o => o.delivered).length}</span>
               </Button>
               <Button
                 variant={view === "products" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("products")}
-                className="transition-all"
+                className="transition-all px-2 sm:px-3 hidden sm:flex"
               >
-                <Package className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Produits</span>
+                <Package className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">Produits</span>
               </Button>
               <Button
                 variant={view === "calendar" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("calendar")}
-                className="transition-all"
+                className="transition-all px-2 sm:px-3 hidden sm:flex"
               >
-                <CalendarDays className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Calendrier</span>
+                <CalendarDays className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">Calendrier</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="transition-all"
+                className="transition-all px-2 sm:px-3 hidden sm:flex"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Déconnexion</span>
+                <LogOut className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">Déconnexion</span>
               </Button>
             </div>
           </div>
