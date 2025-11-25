@@ -45,21 +45,31 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // Handle app visibility changes (when switching to/from WhatsApp, etc.)
+  // Fix mobile browsers (Safari / WhatsApp) freezing when coming back to the app
   useEffect(() => {
+    let wasHidden = false;
+
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        // Force a re-render when app becomes visible again
-        window.dispatchEvent(new Event('focus'));
+      if (document.visibilityState === "hidden") {
+        wasHidden = true;
+      } else if (document.visibilityState === "visible" && wasHidden) {
+        wasHidden = false;
+        window.location.reload();
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('pageshow', handleVisibilityChange);
+    const handlePageShow = (event: any) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('pageshow', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
 
