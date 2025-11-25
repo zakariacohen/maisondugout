@@ -127,8 +127,9 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
                       <AlertDialogCancel>Annuler</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => {
+                          const wasDelivered = order.delivered;
                           onToggleDelivered(order.id);
-                          toast.success(order.delivered 
+                          toast.success(wasDelivered 
                             ? `Commande de ${order.customerName} marquée comme non livrée`
                             : `Commande de ${order.customerName} marquée comme livrée`
                           );
