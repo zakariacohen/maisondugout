@@ -8,7 +8,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.jpg";
 
 export interface Order {
   id: string;
