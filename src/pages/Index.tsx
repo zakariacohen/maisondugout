@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
-import { Plus, Clock, CheckCircle2, Package } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Products from "@/pages/Products";
 import { useOrders } from "@/hooks/useOrders";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export interface Order {
   id: string;
@@ -29,6 +31,14 @@ const Index = () => {
   const [view, setView] = useState<"form" | "pending" | "delivered" | "products">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
+  const { user, isLoading: authLoading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, authLoading, navigate]);
 
   const handleAddOrder = async (order: Order) => {
     try {
@@ -79,6 +89,14 @@ const Index = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Déconnexion réussie");
+  };
+
+  if (authLoading) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background">
@@ -86,13 +104,15 @@ const Index = () => {
       <header className="bg-card/80 backdrop-blur-sm border-b border-border shadow-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary">
-                Maison du Goût
-              </h1>
-              <p className="text-sm text-muted-foreground">Gestion des Commandes</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+                  Maison du Goût
+                </h1>
+                <p className="text-sm text-muted-foreground">Gestion des Commandes</p>
+              </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 variant={view === "form" ? "default" : "outline"}
                 size="sm"
@@ -134,6 +154,15 @@ const Index = () => {
               >
                 <Package className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Produits</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="transition-all"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Déconnexion</span>
               </Button>
             </div>
           </div>
