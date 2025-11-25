@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon, Check, ChevronsUpDown, Grid3x3 } from "lucide-react";
 import { toast } from "sonner";
 import type { Order, OrderItem } from "@/pages/Index";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts, Product } from "@/hooks/useProducts";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
   const [openCombobox, setOpenCombobox] = useState<number | null>(null);
+  const [showProductGrid, setShowProductGrid] = useState<number | null>(null);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
   // Update form when editingOrder changes
@@ -86,6 +88,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
         total: newItems[index].quantity * product.price,
       };
       setItems(newItems);
+      setShowProductGrid(null); // Close the grid after selection
     }
   };
 
@@ -263,47 +266,85 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                             <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
                         ) : (
-                          <Popover open={openCombobox === index} onOpenChange={(open) => setOpenCombobox(open ? index : null)}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={openCombobox === index}
-                                className="w-full justify-between mt-1 font-normal"
-                              >
-                                {item.product || "Chercher un produit..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0" align="start">
-                              <Command>
-                                <CommandInput placeholder="Taper pour chercher..." />
-                                <CommandList>
-                                  <CommandEmpty>Aucun produit trouvé.</CommandEmpty>
-                                  <CommandGroup>
-                                    {products?.map((product) => (
-                                      <CommandItem
-                                        key={product.id}
-                                        value={product.name}
-                                        onSelect={() => {
-                                          selectProduct(index, product.id);
-                                          setOpenCombobox(null);
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            item.product === product.name ? "opacity-100" : "opacity-0"
-                                          )}
-                                        />
-                                        {product.name} - {product.price.toFixed(2)} Dh
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+                          <div className="flex gap-2">
+                            {/* Grid View Dialog - Mobile Friendly */}
+                            <Dialog open={showProductGrid === index} onOpenChange={(open) => setShowProductGrid(open ? index : null)}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="flex-1 justify-start font-normal"
+                                >
+                                  {item.product || "Choisir un produit"}
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Choisir un produit</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                                  {products?.map((product) => (
+                                    <Card
+                                      key={product.id}
+                                      className={cn(
+                                        "cursor-pointer transition-all hover:shadow-md hover:scale-105",
+                                        item.product === product.name && "ring-2 ring-primary bg-primary/5"
+                                      )}
+                                      onClick={() => selectProduct(index, product.id)}
+                                    >
+                                      <CardContent className="p-4 text-center">
+                                        <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-primary" />
+                                        <p className="font-semibold text-sm mb-1">{product.name}</p>
+                                        <p className="text-primary font-bold">{product.price.toFixed(2)} Dh</p>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+
+                            {/* Icon to toggle between grid and search */}
+                            <Popover open={openCombobox === index} onOpenChange={(open) => setOpenCombobox(open ? index : null)}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="shrink-0"
+                                >
+                                  <ChevronsUpDown className="h-4 w-4" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[300px] p-0" align="start">
+                                <Command>
+                                  <CommandInput placeholder="Taper pour chercher..." />
+                                  <CommandList>
+                                    <CommandEmpty>Aucun produit trouvé.</CommandEmpty>
+                                    <CommandGroup>
+                                      {products?.map((product) => (
+                                        <CommandItem
+                                          key={product.id}
+                                          value={product.name}
+                                          onSelect={() => {
+                                            selectProduct(index, product.id);
+                                            setOpenCombobox(null);
+                                          }}
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 h-4 w-4",
+                                              item.product === product.name ? "opacity-100" : "opacity-0"
+                                            )}
+                                          />
+                                          {product.name} - {product.price.toFixed(2)} Dh
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
                         )}
                       </div>
                       <div className="col-span-4 sm:col-span-2">
