@@ -3,15 +3,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Order, OrderItem } from "@/pages/Index";
+import { useProducts } from "@/hooks/useProducts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OrderFormProps {
   onAddOrder: (order: Order) => void;
 }
 
 export const OrderForm = ({ onAddOrder }: OrderFormProps) => {
+  const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [items, setItems] = useState<OrderItem[]>([
@@ -38,6 +47,20 @@ export const OrderForm = ({ onAddOrder }: OrderFormProps) => {
     }
     
     setItems(newItems);
+  };
+
+  const selectProduct = (index: number, productId: string) => {
+    const product = products?.find(p => p.id === productId);
+    if (product) {
+      const newItems = [...items];
+      newItems[index] = {
+        ...newItems[index],
+        product: product.name,
+        unitPrice: product.price,
+        total: newItems[index].quantity * product.price,
+      };
+      setItems(newItems);
+    }
   };
 
   const calculateTotal = () => {
@@ -154,12 +177,26 @@ export const OrderForm = ({ onAddOrder }: OrderFormProps) => {
                     <div className="grid grid-cols-12 gap-3">
                       <div className="col-span-12 sm:col-span-5">
                         <Label className="text-xs">Produit</Label>
-                        <Input
-                          placeholder="Ex: Croissant"
-                          value={item.product}
-                          onChange={(e) => updateItem(index, "product", e.target.value)}
-                          className="mt-1"
-                        />
+                        {isLoading ? (
+                          <div className="mt-1 h-9 flex items-center justify-center">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          </div>
+                        ) : (
+                          <Select onValueChange={(value) => selectProduct(index, value)}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Choisir un produit">
+                                {item.product || "Choisir un produit"}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {products?.map((product) => (
+                                <SelectItem key={product.id} value={product.id}>
+                                  {product.name} - {product.price.toFixed(2)} Dh
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                       </div>
                       <div className="col-span-4 sm:col-span-2">
                         <Label className="text-xs">Qté</Label>
