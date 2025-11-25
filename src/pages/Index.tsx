@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
 import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,6 +34,7 @@ export interface OrderItem {
 const Index = () => {
   const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
   const { user, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -182,6 +184,59 @@ const Index = () => {
                 <LogOut className="w-4 h-4 sm:mr-2" />
                 <span className="hidden md:inline">Déconnexion</span>
               </Button>
+              
+              {/* Mobile Menu */}
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="sm:hidden px-2"
+                  >
+                    <Menu className="w-4 h-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-64">
+                  <div className="flex flex-col gap-3 mt-8">
+                    <Button
+                      variant={view === "products" ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => {
+                        setView("products");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <Package className="w-5 h-5 mr-3" />
+                      Produits
+                    </Button>
+                    <Button
+                      variant={view === "calendar" ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => {
+                        setView("calendar");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <CalendarDays className="w-5 h-5 mr-3" />
+                      Calendrier
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => {
+                        handleSignOut();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <LogOut className="w-5 h-5 mr-3" />
+                      Déconnexion
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
