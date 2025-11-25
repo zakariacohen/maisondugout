@@ -167,7 +167,7 @@ const Index = () => {
                 <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Gestion des Commandes</p>
               </div>
             </div>
-            <div className="flex gap-1 sm:gap-2 items-center flex-shrink-0">
+            <div className="flex flex-wrap gap-1 sm:gap-2 items-center justify-end flex-shrink-0 max-w-full">
               <Button
                 variant={view === "form" ? "default" : "outline"}
                 size="sm"
