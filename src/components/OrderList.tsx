@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, MessageCircle, Pencil } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, MessageCircle, Pencil, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import { useState } from "react";
@@ -28,6 +28,18 @@ interface OrderListProps {
 }
 
 export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrder, isLoading, title = "Mes Commandes" }: OrderListProps) => {
+  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+  
+  const toggleOrderExpanded = (orderId: string) => {
+    const newExpanded = new Set(expandedOrders);
+    if (newExpanded.has(orderId)) {
+      newExpanded.delete(orderId);
+    } else {
+      newExpanded.add(orderId);
+    }
+    setExpandedOrders(newExpanded);
+  };
+  
   const handleDelete = (orderId: string, customerName: string) => {
     onDeleteOrder(orderId);
     toast.success(`Commande de ${customerName} supprimée`);
@@ -235,35 +247,78 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="space-y-2 mb-4">
-              {order.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
-                >
-                  <div className="flex-1">
-                    <span className="font-medium text-foreground">{item.product}</span>
-                    <span className="text-sm text-muted-foreground ml-2">
-                      x{item.quantity}
+            {/* Summary when collapsed (more than 3 items) */}
+            {order.items.length > 3 && !expandedOrders.has(order.id) ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-3 px-4 rounded-lg bg-muted/30 border border-border/50">
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5 text-primary" />
+                    <span className="font-medium text-foreground">
+                      {order.items.length} produit{order.items.length > 1 ? 's' : ''}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-muted-foreground">
-                      {item.unitPrice.toFixed(2)} Dh × {item.quantity}
-                    </div>
-                    <div className="font-semibold text-foreground">
-                      {item.total.toFixed(2)} Dh
-                    </div>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleOrderExpanded(order.id)}
+                    className="hover:bg-primary/10"
+                  >
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Voir détails
+                  </Button>
                 </div>
-              ))}
-            </div>
-            <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
-              <span className="text-lg font-semibold text-foreground">Total:</span>
-              <span className="text-2xl font-bold text-primary">
-                {order.total.toFixed(2)} Dh
-              </span>
-            </div>
+                <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
+                  <span className="text-lg font-semibold text-foreground">Total:</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {order.total.toFixed(2)} Dh
+                  </span>
+                </div>
+              </div>
+            ) : (
+              /* Full details when expanded or 3 items or less */
+              <div className="space-y-3">
+                {order.items.length > 3 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleOrderExpanded(order.id)}
+                    className="w-full hover:bg-muted/50"
+                  >
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Masquer détails
+                  </Button>
+                )}
+                <div className="space-y-2 mb-4">
+                  {order.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <span className="font-medium text-foreground">{item.product}</span>
+                        <span className="text-sm text-muted-foreground ml-2">
+                          x{item.quantity}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">
+                          {item.unitPrice.toFixed(2)} Dh × {item.quantity}
+                        </div>
+                        <div className="font-semibold text-foreground">
+                          {item.total.toFixed(2)} Dh
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
+                  <span className="text-lg font-semibold text-foreground">Total:</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {order.total.toFixed(2)} Dh
+                  </span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}
