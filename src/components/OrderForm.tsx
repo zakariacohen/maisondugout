@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ShoppingBag, Loader2 } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { Order, OrderItem } from "@/pages/Index";
 import { useProducts } from "@/hooks/useProducts";
@@ -14,6 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface OrderFormProps {
   onAddOrder: (order: Order) => void;
@@ -26,6 +31,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState(editingOrder?.customerName || "");
   const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || "");
+  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(editingOrder?.deliveryDate);
   const [items, setItems] = useState<OrderItem[]>(
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
@@ -35,10 +41,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (editingOrder) {
       setCustomerName(editingOrder.customerName);
       setPhoneNumber(editingOrder.phoneNumber);
+      setDeliveryDate(editingOrder.deliveryDate);
       setItems(editingOrder.items);
     } else {
       setCustomerName("");
       setPhoneNumber("");
+      setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
   }, [editingOrder]);
@@ -108,6 +116,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       date: editingOrder?.date || new Date(),
       delivered: editingOrder?.delivered || false,
       deliveryImageUrl: editingOrder?.deliveryImageUrl,
+      deliveryDate: deliveryDate,
     };
 
     // Check if we're updating an existing order
@@ -123,6 +132,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (!editingOrder) {
       setCustomerName("");
       setPhoneNumber("");
+      setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
   };
@@ -174,6 +184,33 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                   className="transition-all focus:shadow-sm"
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Date de Livraison (optionnelle)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !deliveryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {deliveryDate ? format(deliveryDate, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={deliveryDate}
+                    onSelect={setDeliveryDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 

@@ -5,6 +5,8 @@ import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, MessageCirc
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import { useState } from "react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 import {
   AlertDialog,
@@ -147,6 +149,12 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                   <Calendar className="w-3.5 h-3.5" />
                   {formatDate(order.date)}
                 </CardDescription>
+                {order.deliveryDate && (
+                  <CardDescription className="flex items-center gap-2 text-xs font-semibold text-primary">
+                    <Calendar className="w-3.5 h-3.5" />
+                    Livraison: {format(order.deliveryDate, "dd MMM yyyy", { locale: fr })}
+                  </CardDescription>
+                )}
               </div>
               <div className="flex gap-1">
                 <Button
