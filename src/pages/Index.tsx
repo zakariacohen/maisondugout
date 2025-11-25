@@ -48,6 +48,7 @@ const Index = () => {
   // Fix mobile browsers (Safari / WhatsApp) freezing when coming back to the app
   useEffect(() => {
     let wasHidden = false;
+    let lostFocus = false;
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -64,12 +65,27 @@ const Index = () => {
       }
     };
 
+    const handleBlur = () => {
+      lostFocus = true;
+    };
+
+    const handleFocus = () => {
+      if (lostFocus) {
+        lostFocus = false;
+        window.location.reload();
+      }
+    };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("focus", handleFocus);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 
