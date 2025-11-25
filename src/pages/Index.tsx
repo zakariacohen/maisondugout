@@ -45,6 +45,24 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // Handle app visibility changes (when switching to/from WhatsApp, etc.)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Force a re-render when app becomes visible again
+        window.dispatchEvent(new Event('focus'));
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pageshow', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pageshow', handleVisibilityChange);
+    };
+  }, []);
+
   const handleAddOrder = async (order: Order) => {
     try {
       await addOrder(order);
