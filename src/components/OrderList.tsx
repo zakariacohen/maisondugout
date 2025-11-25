@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import {
@@ -19,9 +19,10 @@ import {
 interface OrderListProps {
   orders: Order[];
   onDeleteOrder: (orderId: string) => void;
+  onToggleDelivered: (orderId: string) => void;
 }
 
-export const OrderList = ({ orders, onDeleteOrder }: OrderListProps) => {
+export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderListProps) => {
   const handleDelete = (orderId: string, customerName: string) => {
     onDeleteOrder(orderId);
     toast.success(`Commande de ${customerName} supprimée`);
@@ -67,7 +68,25 @@ export const OrderList = ({ orders, onDeleteOrder }: OrderListProps) => {
           <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
             <div className="flex justify-between items-start">
               <div className="space-y-1 flex-1">
-                <CardTitle className="text-xl font-serif">{order.customerName}</CardTitle>
+                <div className="flex items-center gap-2 mb-1">
+                  <CardTitle className="text-xl font-serif">{order.customerName}</CardTitle>
+                  <Badge 
+                    variant={order.delivered ? "default" : "destructive"}
+                    className="flex items-center gap-1"
+                  >
+                    {order.delivered ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3" />
+                        Livrée
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-3 h-3" />
+                        En attente
+                      </>
+                    )}
+                  </Badge>
+                </div>
                 <CardDescription className="flex items-center gap-2 text-sm">
                   <Phone className="w-3.5 h-3.5" />
                   {order.phoneNumber}
@@ -77,35 +96,49 @@ export const OrderList = ({ orders, onDeleteOrder }: OrderListProps) => {
                   {formatDate(order.date)}
                 </CardDescription>
               </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Supprimer la commande?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir supprimer la commande de {order.customerName}? 
-                      Cette action est irréversible.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleDelete(order.id, order.customerName)}
-                      className="bg-destructive hover:bg-destructive/90"
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleDelivered(order.id)}
+                  className={order.delivered 
+                    ? "hover:bg-muted text-muted-foreground" 
+                    : "hover:bg-primary/10 text-primary"
+                  }
+                  title={order.delivered ? "Marquer comme non livrée" : "Marquer comme livrée"}
+                >
+                  {order.delivered ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-destructive/10 hover:text-destructive"
                     >
-                      Supprimer
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Supprimer la commande?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer la commande de {order.customerName}? 
+                        Cette action est irréversible.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(order.id, order.customerName)}
+                        className="bg-destructive hover:bg-destructive/90"
+                      >
+                        Supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-4">
