@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
-import { Plus, List } from "lucide-react";
+import { Plus, List, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Products from "@/pages/Products";
 
 export interface Order {
   id: string;
@@ -23,7 +24,7 @@ export interface OrderItem {
 
 const Index = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [view, setView] = useState<"form" | "list">("form");
+  const [view, setView] = useState<"form" | "list" | "products">("form");
 
   const handleAddOrder = (order: Order) => {
     setOrders([order, ...orders]);
@@ -76,6 +77,15 @@ const Index = () => {
                 </span>
                 <span className="sm:hidden">{orders.length}</span>
               </Button>
+              <Button
+                variant={view === "products" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setView("products")}
+                className="transition-all"
+              >
+                <Package className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Produits</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -86,12 +96,14 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {view === "form" ? (
             <OrderForm onAddOrder={handleAddOrder} />
-          ) : (
+          ) : view === "list" ? (
             <OrderList 
               orders={orders} 
               onDeleteOrder={handleDeleteOrder}
               onToggleDelivered={handleToggleDelivered}
             />
+          ) : (
+            <Products />
           )}
         </div>
       </main>
