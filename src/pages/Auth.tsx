@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Lock } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -45,9 +45,11 @@ const Auth = () => {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-primary" />
-            </div>
+            <img 
+              src={logo} 
+              alt="Maison du Goût" 
+              className="w-32 h-32 object-contain"
+            />
           </div>
           <CardTitle className="text-3xl font-serif font-bold text-primary">
             Maison du Goût
