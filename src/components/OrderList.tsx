@@ -97,18 +97,52 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
                 </CardDescription>
               </div>
               <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onToggleDelivered(order.id)}
-                  className={order.delivered 
-                    ? "hover:bg-muted text-muted-foreground" 
-                    : "hover:bg-primary/10 text-primary"
-                  }
-                  title={order.delivered ? "Marquer comme non livrée" : "Marquer comme livrée"}
-                >
-                  {order.delivered ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={order.delivered 
+                        ? "hover:bg-muted text-muted-foreground" 
+                        : "hover:bg-primary/10 text-primary"
+                      }
+                      title={order.delivered ? "Marquer comme non livrée" : "Marquer comme livrée"}
+                    >
+                      {order.delivered ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {order.delivered ? "Marquer comme non livrée?" : "Confirmer la livraison"}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {order.delivered 
+                          ? `Voulez-vous marquer la commande de ${order.customerName} comme non livrée?`
+                          : `Confirmez-vous que la commande de ${order.customerName} a été livrée?`
+                        }
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          onToggleDelivered(order.id);
+                          toast.success(order.delivered 
+                            ? `Commande de ${order.customerName} marquée comme non livrée`
+                            : `Commande de ${order.customerName} marquée comme livrée`
+                          );
+                        }}
+                        className={order.delivered 
+                          ? "bg-muted hover:bg-muted/90" 
+                          : "bg-green-600 hover:bg-green-700"
+                        }
+                      >
+                        {order.delivered ? "Marquer non livrée" : "Confirmer la livraison"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
