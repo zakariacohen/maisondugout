@@ -249,10 +249,10 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
           <CardContent className="pt-4">
             {(() => {
               const isExpanded = expandedOrders.has(order.id);
-              const hasManyItems = order.items.length > 2;
+              const hasManyItems = order.items.length > 1;
               const visibleItems = !hasManyItems || isExpanded
                 ? order.items
-                : order.items.slice(0, 2);
+                : order.items.slice(0, 1);
 
               return (
                 <div className="space-y-3">
@@ -281,7 +281,7 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                     ))}
                   </div>
 
-                  {/* Bouton plus / masquer si plus de 2 produits */}
+                  {/* Bouton plus / masquer si plus de 1 produit */}
                   {hasManyItems && (
                     <Button
                       variant="ghost"
@@ -297,9 +297,9 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                       ) : (
                         <>
                           <ChevronDown className="w-4 h-4 mr-2" />
-                          +{order.items.length - 2} autre
-                          {order.items.length - 2 > 1 ? 's' : ''} produit
-                          {order.items.length - 2 > 1 ? 's' : ''}
+                          +{order.items.length - 1} autre
+                          {order.items.length - 1 > 1 ? 's' : ''} produit
+                          {order.items.length - 1 > 1 ? 's' : ''}
                         </>
                       )}
                     </Button>
