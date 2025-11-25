@@ -217,7 +217,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
           </div>
 
           {/* Order Items */}
-          <div className="space-y-4">
+          <div className="space-y-4 relative">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
@@ -230,12 +230,22 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                 variant="outline"
                 size="sm"
                 onClick={addItem}
-                className="hover:bg-primary/5"
+                className="hover:bg-primary/5 hidden sm:flex"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Ajouter
               </Button>
             </div>
+            
+            {/* Floating Add Button for Mobile */}
+            <Button
+              type="button"
+              onClick={addItem}
+              className="fixed bottom-24 right-4 z-50 rounded-full w-14 h-14 shadow-lg bg-primary hover:bg-primary/90 sm:hidden"
+              size="icon"
+            >
+              <Plus className="w-6 h-6" />
+            </Button>
 
             <div className="space-y-3">
               {items.map((item, index) => (
