@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
-import { Plus, List, Package } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Products from "@/pages/Products";
 import { useOrders } from "@/hooks/useOrders";
@@ -26,14 +26,14 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [view, setView] = useState<"form" | "list" | "products">("form");
+  const [view, setView] = useState<"form" | "pending" | "delivered" | "products">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
 
   const handleAddOrder = async (order: Order) => {
     try {
       await addOrder(order);
-      setView("list");
+      setView("pending");
       setEditingOrder(null);
       toast.success("Commande ajoutée avec succès");
     } catch (error) {
@@ -50,7 +50,7 @@ const Index = () => {
         items: order.items,
         total: order.total,
       });
-      setView("list");
+      setView("pending");
       setEditingOrder(null);
       toast.success("Commande modifiée avec succès");
     } catch (error) {
@@ -79,14 +79,6 @@ const Index = () => {
     }
   };
 
-  const handleImageUpload = async (orderId: string, file: File) => {
-    try {
-      const imageUrl = await uploadDeliveryImage(file, orderId);
-      await updateOrder({ orderId, delivered: true, deliveryImageUrl: imageUrl });
-    } catch (error) {
-      toast.error("Erreur lors de l'upload de l'image");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background">
@@ -111,16 +103,28 @@ const Index = () => {
                 <span className="hidden sm:inline">Nouvelle</span>
               </Button>
               <Button
-                variant={view === "list" ? "default" : "outline"}
+                variant={view === "pending" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setView("list")}
+                onClick={() => setView("pending")}
                 className="transition-all"
               >
-                <List className="w-4 h-4 mr-2" />
+                <Clock className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">
-                  Liste ({orders.length})
+                  En attente ({orders.filter(o => !o.delivered).length})
                 </span>
-                <span className="sm:hidden">{orders.length}</span>
+                <span className="sm:hidden">{orders.filter(o => !o.delivered).length}</span>
+              </Button>
+              <Button
+                variant={view === "delivered" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setView("delivered")}
+                className="transition-all"
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">
+                  Livrées ({orders.filter(o => o.delivered).length})
+                </span>
+                <span className="sm:hidden">{orders.filter(o => o.delivered).length}</span>
               </Button>
               <Button
                 variant={view === "products" ? "default" : "outline"}
@@ -146,17 +150,26 @@ const Index = () => {
               editingOrder={editingOrder}
               onCancelEdit={() => {
                 setEditingOrder(null);
-                setView("list");
+                setView("pending");
               }}
             />
-          ) : view === "list" ? (
+          ) : view === "pending" ? (
             <OrderList 
-              orders={orders} 
+              orders={orders.filter(o => !o.delivered)} 
               onDeleteOrder={handleDeleteOrder}
               onToggleDelivered={handleToggleDelivered}
-              onImageUpload={handleImageUpload}
               onEditOrder={handleEditOrder}
               isLoading={isLoading}
+              title="Commandes en Attente"
+            />
+          ) : view === "delivered" ? (
+            <OrderList 
+              orders={orders.filter(o => o.delivered)} 
+              onDeleteOrder={handleDeleteOrder}
+              onToggleDelivered={handleToggleDelivered}
+              onEditOrder={handleEditOrder}
+              isLoading={isLoading}
+              title="Commandes Livrées"
             />
           ) : (
             <Products />

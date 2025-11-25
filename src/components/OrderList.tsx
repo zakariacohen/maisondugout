@@ -1,11 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon, MessageCircle, Pencil } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, MessageCircle, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import { useState } from "react";
-import { DeliveryImageCapture } from "@/components/DeliveryImageCapture";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,25 +22,15 @@ interface OrderListProps {
   orders: Order[];
   onDeleteOrder: (orderId: string) => void;
   onToggleDelivered: (orderId: string, currentStatus: boolean) => void;
-  onImageUpload: (orderId: string, file: File) => void;
   onEditOrder: (order: Order) => void;
   isLoading?: boolean;
+  title?: string;
 }
 
-export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpload, onEditOrder, isLoading }: OrderListProps) => {
-  const [selectedOrderForImage, setSelectedOrderForImage] = useState<string | null>(null);
-  
+export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrder, isLoading, title = "Mes Commandes" }: OrderListProps) => {
   const handleDelete = (orderId: string, customerName: string) => {
     onDeleteOrder(orderId);
     toast.success(`Commande de ${customerName} supprimée`);
-  };
-
-  const handleImageCapture = async (file: File) => {
-    if (selectedOrderForImage) {
-      await onImageUpload(selectedOrderForImage, file);
-      toast.success("Image enregistrée avec succès");
-      setSelectedOrderForImage(null);
-    }
   };
 
   const handleShareWhatsApp = (order: Order) => {
@@ -103,16 +93,10 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
   }
 
   return (
-    <>
-      <DeliveryImageCapture
-        isOpen={selectedOrderForImage !== null}
-        onClose={() => setSelectedOrderForImage(null)}
-        onImageCapture={handleImageCapture}
-      />
-      <div className="space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-serif font-bold text-foreground">
-          Mes Commandes
+          {title}
         </h2>
         <Badge variant="secondary" className="px-3 py-1 text-base">
           {orders.length} commande{orders.length > 1 ? 's' : ''}
@@ -171,28 +155,6 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
-                {!order.delivered && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSelectedOrderForImage(order.id)}
-                    className="hover:bg-primary/10 text-primary"
-                    title="Ajouter une photo de livraison"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </Button>
-                )}
-                {order.deliveryImageUrl && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => window.open(order.deliveryImageUrl, '_blank')}
-                    className="hover:bg-primary/10 text-primary"
-                    title="Voir la photo de livraison"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                  </Button>
-                )}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
@@ -306,6 +268,5 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
         </Card>
       ))}
     </div>
-    </>
   );
 };
