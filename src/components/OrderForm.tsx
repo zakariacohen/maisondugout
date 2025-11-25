@@ -110,16 +110,21 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       deliveryImageUrl: editingOrder?.deliveryImageUrl,
     };
 
-    if (editingOrder && onUpdateOrder) {
+    // Check if we're updating an existing order
+    if (editingOrder?.id && onUpdateOrder) {
+      console.log("Updating order:", order.id, "with items:", order.items.length);
       onUpdateOrder(order);
     } else {
+      console.log("Adding new order");
       onAddOrder(order);
     }
     
-    // Reset form
-    setCustomerName("");
-    setPhoneNumber("");
-    setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
+    // Don't reset form in edit mode to prevent confusion
+    if (!editingOrder) {
+      setCustomerName("");
+      setPhoneNumber("");
+      setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
+    }
   };
 
   return (
@@ -205,7 +210,10 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                             <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
                         ) : (
-                          <Select onValueChange={(value) => selectProduct(index, value)}>
+                          <Select 
+                            value={products?.find(p => p.name === item.product)?.id || ""}
+                            onValueChange={(value) => selectProduct(index, value)}
+                          >
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Choisir un produit">
                                 {item.product || "Choisir un produit"}
