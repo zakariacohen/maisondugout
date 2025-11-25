@@ -247,26 +247,45 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            {/* Summary when collapsed (more than 3 items) */}
-            {order.items.length > 3 && !expandedOrders.has(order.id) ? (
+            {/* Summary when collapsed (more than 2 items) */}
+            {order.items.length > 2 && !expandedOrders.has(order.id) ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between py-3 px-4 rounded-lg bg-muted/30 border border-border/50">
-                  <div className="flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5 text-primary" />
-                    <span className="font-medium text-foreground">
-                      {order.items.length} produit{order.items.length > 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleOrderExpanded(order.id)}
-                    className="hover:bg-primary/10"
-                  >
-                    <ChevronDown className="w-4 h-4 mr-1" />
-                    Voir détails
-                  </Button>
+                {/* Show first 2 items */}
+                <div className="space-y-2">
+                  {order.items.slice(0, 2).map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <span className="font-medium text-foreground">{item.product}</span>
+                        <span className="text-sm text-muted-foreground ml-2">
+                          x{item.quantity}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">
+                          {item.unitPrice.toFixed(2)} Dh × {item.quantity}
+                        </div>
+                        <div className="font-semibold text-foreground">
+                          {item.total.toFixed(2)} Dh
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+                
+                {/* Show more button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleOrderExpanded(order.id)}
+                  className="w-full hover:bg-primary/10 border border-dashed border-border"
+                >
+                  <ChevronDown className="w-4 h-4 mr-2" />
+                  +{order.items.length - 2} autre{order.items.length - 2 > 1 ? 's' : ''} produit{order.items.length - 2 > 1 ? 's' : ''}
+                </Button>
+                
                 <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
                   <span className="text-lg font-semibold text-foreground">Total:</span>
                   <span className="text-2xl font-bold text-primary">
@@ -275,17 +294,17 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                 </div>
               </div>
             ) : (
-              /* Full details when expanded or 3 items or less */
+              /* Full details when expanded or 2 items or less */
               <div className="space-y-3">
-                {order.items.length > 3 && (
+                {order.items.length > 2 && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleOrderExpanded(order.id)}
                     className="w-full hover:bg-muted/50"
                   >
-                    <ChevronUp className="w-4 h-4 mr-1" />
-                    Masquer détails
+                    <ChevronUp className="w-4 h-4 mr-2" />
+                    Masquer
                   </Button>
                 )}
                 <div className="space-y-2 mb-4">
