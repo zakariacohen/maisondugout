@@ -48,7 +48,7 @@ const Auth = () => {
             <img 
               src={logo} 
               alt="Maison du Goût" 
-              className="w-32 h-32 object-contain"
+              className="w-20 h-20 object-contain"
             />
           </div>
           <CardTitle className="text-3xl font-serif font-bold text-primary">
