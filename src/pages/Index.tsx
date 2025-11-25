@@ -20,6 +20,7 @@ export interface Order {
   date: Date;
   delivered: boolean;
   deliveryImageUrl?: string;
+  deliveryDate?: Date;
 }
 
 export interface OrderItem {
@@ -61,6 +62,7 @@ const Index = () => {
         phoneNumber: order.phoneNumber,
         items: order.items,
         total: order.total,
+        deliveryDate: order.deliveryDate,
       });
       setView("pending");
       setEditingOrder(null);
