@@ -1,9 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
+import { useState } from "react";
+import { DeliveryImageCapture } from "@/components/DeliveryImageCapture";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,13 +21,25 @@ import {
 interface OrderListProps {
   orders: Order[];
   onDeleteOrder: (orderId: string) => void;
-  onToggleDelivered: (orderId: string) => void;
+  onToggleDelivered: (orderId: string, currentStatus: boolean) => void;
+  onImageUpload: (orderId: string, file: File) => void;
+  isLoading?: boolean;
 }
 
-export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderListProps) => {
+export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpload, isLoading }: OrderListProps) => {
+  const [selectedOrderForImage, setSelectedOrderForImage] = useState<string | null>(null);
+  
   const handleDelete = (orderId: string, customerName: string) => {
     onDeleteOrder(orderId);
     toast.success(`Commande de ${customerName} supprimée`);
+  };
+
+  const handleImageCapture = async (file: File) => {
+    if (selectedOrderForImage) {
+      await onImageUpload(selectedOrderForImage, file);
+      toast.success("Image enregistrée avec succès");
+      setSelectedOrderForImage(null);
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -37,6 +51,17 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
       minute: '2-digit',
     }).format(date);
   };
+
+  if (isLoading) {
+    return (
+      <Card className="shadow-lg border-border/50">
+        <CardContent className="py-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground">Chargement des commandes...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -53,7 +78,13 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
   }
 
   return (
-    <div className="space-y-4">
+    <>
+      <DeliveryImageCapture
+        isOpen={selectedOrderForImage !== null}
+        onClose={() => setSelectedOrderForImage(null)}
+        onImageCapture={handleImageCapture}
+      />
+      <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-serif font-bold text-foreground">
           Mes Commandes
@@ -97,6 +128,28 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
                 </CardDescription>
               </div>
               <div className="flex gap-1">
+                {!order.delivered && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedOrderForImage(order.id)}
+                    className="hover:bg-primary/10 text-primary"
+                    title="Ajouter une photo de livraison"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </Button>
+                )}
+                {order.deliveryImageUrl && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => window.open(order.deliveryImageUrl, '_blank')}
+                    className="hover:bg-primary/10 text-primary"
+                    title="Voir la photo de livraison"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                  </Button>
+                )}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
@@ -128,7 +181,7 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
                       <AlertDialogAction
                         onClick={() => {
                           const wasDelivered = order.delivered;
-                          onToggleDelivered(order.id);
+                          onToggleDelivered(order.id, order.delivered);
                           toast.success(wasDelivered 
                             ? `Commande de ${order.customerName} marquée comme non livrée`
                             : `Commande de ${order.customerName} marquée comme livrée`
@@ -210,5 +263,6 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered }: OrderLis
         </Card>
       ))}
     </div>
+    </>
   );
 };

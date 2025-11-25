@@ -4,6 +4,8 @@ import { OrderList } from "@/components/OrderList";
 import { Plus, List, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Products from "@/pages/Products";
+import { useOrders } from "@/hooks/useOrders";
+import { toast } from "sonner";
 
 export interface Order {
   id: string;
@@ -13,6 +15,7 @@ export interface Order {
   total: number;
   date: Date;
   delivered: boolean;
+  deliveryImageUrl?: string;
 }
 
 export interface OrderItem {
@@ -23,24 +26,42 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
   const [view, setView] = useState<"form" | "list" | "products">("form");
+  const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
 
-  const handleAddOrder = (order: Order) => {
-    setOrders([order, ...orders]);
-    setView("list");
+  const handleAddOrder = async (order: Order) => {
+    try {
+      await addOrder(order);
+      setView("list");
+      toast.success("Commande ajoutée avec succès");
+    } catch (error) {
+      toast.error("Erreur lors de l'ajout de la commande");
+    }
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    setOrders(orders.filter(order => order.id !== orderId));
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await deleteOrder(orderId);
+    } catch (error) {
+      toast.error("Erreur lors de la suppression");
+    }
   };
 
-  const handleToggleDelivered = (orderId: string) => {
-    setOrders(orders.map(order => 
-      order.id === orderId 
-        ? { ...order, delivered: !order.delivered }
-        : order
-    ));
+  const handleToggleDelivered = async (orderId: string, currentStatus: boolean) => {
+    try {
+      await updateOrder({ orderId, delivered: !currentStatus });
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour");
+    }
+  };
+
+  const handleImageUpload = async (orderId: string, file: File) => {
+    try {
+      const imageUrl = await uploadDeliveryImage(file, orderId);
+      await updateOrder({ orderId, delivered: true, deliveryImageUrl: imageUrl });
+    } catch (error) {
+      toast.error("Erreur lors de l'upload de l'image");
+    }
   };
 
   return (
@@ -101,6 +122,8 @@ const Index = () => {
               orders={orders} 
               onDeleteOrder={handleDeleteOrder}
               onToggleDelivered={handleToggleDelivered}
+              onImageUpload={handleImageUpload}
+              isLoading={isLoading}
             />
           ) : (
             <Products />
