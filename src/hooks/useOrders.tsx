@@ -86,22 +86,57 @@ export const useOrders = () => {
       orderId,
       delivered,
       deliveryImageUrl,
+      customerName,
+      phoneNumber,
+      items,
+      total,
     }: {
       orderId: string;
       delivered?: boolean;
       deliveryImageUrl?: string;
+      customerName?: string;
+      phoneNumber?: string;
+      items?: OrderItem[];
+      total?: number;
     }) => {
       const updateData: any = {};
       if (delivered !== undefined) updateData.delivered = delivered;
       if (deliveryImageUrl !== undefined)
         updateData.delivery_image_url = deliveryImageUrl;
+      if (customerName !== undefined) updateData.customer_name = customerName;
+      if (phoneNumber !== undefined) updateData.phone_number = phoneNumber;
+      if (total !== undefined) updateData.total = total;
 
-      const { error } = await supabase
+      const { error: orderError } = await supabase
         .from("orders")
         .update(updateData)
         .eq("id", orderId);
 
-      if (error) throw error;
+      if (orderError) throw orderError;
+
+      // If items are being updated, delete old items and insert new ones
+      if (items !== undefined) {
+        const { error: deleteError } = await supabase
+          .from("order_items")
+          .delete()
+          .eq("order_id", orderId);
+
+        if (deleteError) throw deleteError;
+
+        const itemsToInsert = items.map((item) => ({
+          order_id: orderId,
+          product: item.product,
+          quantity: item.quantity,
+          unit_price: item.unitPrice,
+          total: item.total,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from("order_items")
+          .insert(itemsToInsert);
+
+        if (itemsError) throw itemsError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
