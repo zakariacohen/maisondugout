@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon } from "lucide-react";
+import { Trash2, Phone, ShoppingCart, Calendar, CheckCircle2, Clock, Camera, Image as ImageIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { Order } from "@/pages/Index";
 import { useState } from "react";
@@ -40,6 +40,30 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
       toast.success("Image enregistrée avec succès");
       setSelectedOrderForImage(null);
     }
+  };
+
+  const handleShareWhatsApp = (order: Order) => {
+    // Format the order details for WhatsApp
+    let message = `*Commande - ${order.customerName}*\n\n`;
+    message += `📋 *Détails de la commande:*\n\n`;
+    
+    order.items.forEach((item, index) => {
+      message += `${index + 1}. ${item.product}\n`;
+      message += `   Qté: ${item.quantity} x ${item.unitPrice.toFixed(2)} Dh\n`;
+      message += `   Total: ${item.total.toFixed(2)} Dh\n\n`;
+    });
+    
+    message += `━━━━━━━━━━━━━━━━\n`;
+    message += `*TOTAL: ${order.total.toFixed(2)} Dh*\n\n`;
+    message += `📞 Merci de nous contacter pour confirmer votre commande!\n`;
+    message += `*Maison du Goût*`;
+
+    // Clean phone number and create WhatsApp link
+    const phoneNumber = order.phoneNumber.replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/212${phoneNumber.startsWith('0') ? phoneNumber.slice(1) : phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    toast.success("Message WhatsApp préparé");
   };
 
   const formatDate = (date: Date) => {
@@ -128,6 +152,15 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onImageUpl
                 </CardDescription>
               </div>
               <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleShareWhatsApp(order)}
+                  className="hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20"
+                  title="Partager sur WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </Button>
                 {!order.delivered && (
                   <Button
                     variant="ghost"
