@@ -67,6 +67,7 @@ export const OrderForm = ({ onAddOrder }: OrderFormProps) => {
       })),
       total: calculateTotal(),
       date: new Date(),
+      delivered: false,
     };
 
     onAddOrder(order);

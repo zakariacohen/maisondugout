@@ -11,6 +11,7 @@ export interface Order {
   items: OrderItem[];
   total: number;
   date: Date;
+  delivered: boolean;
 }
 
 export interface OrderItem {
@@ -31,6 +32,14 @@ const Index = () => {
 
   const handleDeleteOrder = (orderId: string) => {
     setOrders(orders.filter(order => order.id !== orderId));
+  };
+
+  const handleToggleDelivered = (orderId: string) => {
+    setOrders(orders.map(order => 
+      order.id === orderId 
+        ? { ...order, delivered: !order.delivered }
+        : order
+    ));
   };
 
   return (
@@ -78,7 +87,11 @@ const Index = () => {
           {view === "form" ? (
             <OrderForm onAddOrder={handleAddOrder} />
           ) : (
-            <OrderList orders={orders} onDeleteOrder={handleDeleteOrder} />
+            <OrderList 
+              orders={orders} 
+              onDeleteOrder={handleDeleteOrder}
+              onToggleDelivered={handleToggleDelivered}
+            />
           )}
         </div>
       </main>
