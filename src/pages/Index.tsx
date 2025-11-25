@@ -8,6 +8,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.jpg";
 
 export interface Order {
   id: string;
@@ -105,6 +106,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <img 
+                src={logo} 
+                alt="Maison du Goût" 
+                className="w-12 h-12 object-contain"
+              />
               <div>
                 <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary">
                   Maison du Goût
