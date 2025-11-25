@@ -1,21 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, Loader2, CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import type { Order, OrderItem } from "@/pages/Index";
 import { useProducts } from "@/hooks/useProducts";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -35,6 +29,8 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [items, setItems] = useState<OrderItem[]>(
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
+  const [openCombobox, setOpenCombobox] = useState<number | null>(null);
+  const itemsContainerRef = useRef<HTMLDivElement>(null);
 
   // Update form when editingOrder changes
   useEffect(() => {
@@ -53,6 +49,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
 
   const addItem = () => {
     setItems([...items, { product: "", quantity: 1, unitPrice: 0, total: 0 }]);
+    // Scroll to bottom after adding item (mobile UX improvement)
+    setTimeout(() => {
+      if (itemsContainerRef.current) {
+        itemsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    }, 100);
   };
 
   const removeItem = (index: number) => {
@@ -235,7 +237,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
               </Button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3" ref={itemsContainerRef}>
               {items.map((item, index) => (
                 <Card key={index} className="border-border/50 bg-muted/30">
                   <CardContent className="pt-4">
@@ -247,23 +249,47 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                             <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
                         ) : (
-                          <Select 
-                            value={products?.find(p => p.name === item.product)?.id || ""}
-                            onValueChange={(value) => selectProduct(index, value)}
-                          >
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Choisir un produit">
-                                {item.product || "Choisir un produit"}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              {products?.map((product) => (
-                                <SelectItem key={product.id} value={product.id}>
-                                  {product.name} - {product.price.toFixed(2)} Dh
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Popover open={openCombobox === index} onOpenChange={(open) => setOpenCombobox(open ? index : null)}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={openCombobox === index}
+                                className="w-full justify-between mt-1 font-normal"
+                              >
+                                {item.product || "Chercher un produit..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0" align="start">
+                              <Command>
+                                <CommandInput placeholder="Taper pour chercher..." />
+                                <CommandList>
+                                  <CommandEmpty>Aucun produit trouvé.</CommandEmpty>
+                                  <CommandGroup>
+                                    {products?.map((product) => (
+                                      <CommandItem
+                                        key={product.id}
+                                        value={product.name}
+                                        onSelect={() => {
+                                          selectProduct(index, product.id);
+                                          setOpenCombobox(null);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            item.product === product.name ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {product.name} - {product.price.toFixed(2)} Dh
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         )}
                       </div>
                       <div className="col-span-4 sm:col-span-2">
