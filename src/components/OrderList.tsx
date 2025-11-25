@@ -247,97 +247,73 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            {/* Summary when collapsed (more than 2 items) */}
-            {order.items.length > 2 && !expandedOrders.has(order.id) ? (
-              <div className="space-y-3">
-                {/* Show first 2 items */}
-                <div className="space-y-2">
-                  {order.items.slice(0, 2).map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
+            {(() => {
+              const isExpanded = expandedOrders.has(order.id);
+              const hasManyItems = order.items.length > 2;
+              const visibleItems = !hasManyItems || isExpanded
+                ? order.items
+                : order.items.slice(0, 2);
+
+              return (
+                <div className="space-y-3">
+                  {/* Liste des produits visibles */}
+                  <div className="space-y-2 mb-2">
+                    {visibleItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <span className="font-medium text-foreground">{item.product}</span>
+                          <span className="text-sm text-muted-foreground ml-2">
+                            x{item.quantity}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-muted-foreground">
+                            {item.unitPrice.toFixed(2)} Dh × {item.quantity}
+                          </div>
+                          <div className="font-semibold text-foreground">
+                            {item.total.toFixed(2)} Dh
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bouton plus / masquer si plus de 2 produits */}
+                  {hasManyItems && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleOrderExpanded(order.id)}
+                      className="w-full hover:bg-muted/50 border border-dashed border-border"
                     >
-                      <div className="flex-1">
-                        <span className="font-medium text-foreground">{item.product}</span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          x{item.quantity}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">
-                          {item.unitPrice.toFixed(2)} Dh × {item.quantity}
-                        </div>
-                        <div className="font-semibold text-foreground">
-                          {item.total.toFixed(2)} Dh
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      {isExpanded ? (
+                        <>
+                          <ChevronUp className="w-4 h-4 mr-2" />
+                          Masquer
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4 mr-2" />
+                          +{order.items.length - 2} autre
+                          {order.items.length - 2 > 1 ? 's' : ''} produit
+                          {order.items.length - 2 > 1 ? 's' : ''}
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
+                    <span className="text-lg font-semibold text-foreground">Total:</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {order.total.toFixed(2)} Dh
+                    </span>
+                  </div>
                 </div>
-                
-                {/* Show more button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleOrderExpanded(order.id)}
-                  className="w-full hover:bg-primary/10 border border-dashed border-border"
-                >
-                  <ChevronDown className="w-4 h-4 mr-2" />
-                  +{order.items.length - 2} autre{order.items.length - 2 > 1 ? 's' : ''} produit{order.items.length - 2 > 1 ? 's' : ''}
-                </Button>
-                
-                <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
-                  <span className="text-lg font-semibold text-foreground">Total:</span>
-                  <span className="text-2xl font-bold text-primary">
-                    {order.total.toFixed(2)} Dh
-                  </span>
-                </div>
-              </div>
-            ) : (
-              /* Full details when expanded or 2 items or less */
-              <div className="space-y-3">
-                {order.items.length > 2 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleOrderExpanded(order.id)}
-                    className="w-full hover:bg-muted/50"
-                  >
-                    <ChevronUp className="w-4 h-4 mr-2" />
-                    Masquer
-                  </Button>
-                )}
-                <div className="space-y-2 mb-4">
-                  {order.items.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <span className="font-medium text-foreground">{item.product}</span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          x{item.quantity}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">
-                          {item.unitPrice.toFixed(2)} Dh × {item.quantity}
-                        </div>
-                        <div className="font-semibold text-foreground">
-                          {item.total.toFixed(2)} Dh
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t pt-3 flex justify-between items-center bg-primary/5 rounded-lg p-3">
-                  <span className="text-lg font-semibold text-foreground">Total:</span>
-                  <span className="text-2xl font-bold text-primary">
-                    {order.total.toFixed(2)} Dh
-                  </span>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </CardContent>
         </Card>
       ))}
