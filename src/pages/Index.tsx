@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
-import { Plus, Clock, CheckCircle2, Package, LogOut } from "lucide-react";
+import { OrderCalendar } from "@/components/OrderCalendar";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Products from "@/pages/Products";
 import { useOrders } from "@/hooks/useOrders";
@@ -29,7 +30,7 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [view, setView] = useState<"form" | "pending" | "delivered" | "products">("form");
+  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
   const { user, isLoading: authLoading, signOut } = useAuth();
@@ -162,6 +163,15 @@ const Index = () => {
                 <span className="hidden sm:inline">Produits</span>
               </Button>
               <Button
+                variant={view === "calendar" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setView("calendar")}
+                className="transition-all"
+              >
+                <CalendarDays className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Calendrier</span>
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
@@ -205,6 +215,11 @@ const Index = () => {
               onEditOrder={handleEditOrder}
               isLoading={isLoading}
               title="Commandes Livrées"
+            />
+          ) : view === "calendar" ? (
+            <OrderCalendar 
+              orders={orders}
+              isLoading={isLoading}
             />
           ) : (
             <Products />
