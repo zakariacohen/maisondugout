@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Sparkles, Shield, ArrowRight } from "lucide-react";
+import { ShoppingBag, Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpg";
 
@@ -85,16 +85,6 @@ export default function HomePage() {
                 </CardContent>
               </Link>
             </Card>
-          </div>
-
-          {/* Admin Access */}
-          <div className="pt-8 border-t border-border/50">
-            <Link to="/admin">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                <Shield className="w-4 h-4 mr-2" />
-                Accès Administration
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
