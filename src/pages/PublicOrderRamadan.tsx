@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +38,33 @@ export default function PublicOrderRamadan() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // Ramadan 2026 starts approximately February 18, 2026
+  const ramadanDate = new Date('2026-02-18T00:00:00');
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = ramadanDate.getTime() - now.getTime();
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const addToCart = (productId: string, productName: string, price: number) => {
     const existing = items.find(item => item.productId === productId);
@@ -315,6 +342,63 @@ export default function PublicOrderRamadan() {
             <div className="w-3 h-3 rounded-full bg-amber-400"></div>
             <div className="w-2 h-2 rounded-full bg-amber-400"></div>
           </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mb-10 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 blur-2xl opacity-40 animate-pulse"></div>
+          <Card className="relative shadow-2xl border-4 border-amber-400 bg-gradient-to-br from-red-900/95 via-amber-900/95 to-red-950/95 backdrop-blur-sm overflow-hidden">
+            {/* Decorative patterns */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
+            
+            <CardContent className="py-8 px-4">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <Star className="w-6 h-6 text-amber-300 animate-pulse" />
+                  <h3 className="text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200">
+                    العد التنازلي لرمضان
+                  </h3>
+                  <Star className="w-6 h-6 text-amber-300 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                </div>
+                <p className="text-amber-100 text-lg font-medium">
+                  Compte à Rebours jusqu'au Ramadan 2026
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-4 max-w-3xl mx-auto">
+                {[
+                  { value: timeLeft.days, label: 'Jours', labelAr: 'يوم' },
+                  { value: timeLeft.hours, label: 'Heures', labelAr: 'ساعة' },
+                  { value: timeLeft.minutes, label: 'Minutes', labelAr: 'دقيقة' },
+                  { value: timeLeft.seconds, label: 'Secondes', labelAr: 'ثانية' },
+                ].map((item, index) => (
+                  <div key={index} className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-yellow-600 blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                    <div className="relative bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border-3 border-amber-400 shadow-xl transform transition-transform group-hover:scale-105">
+                      <div className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-red-900 via-amber-700 to-red-900 mb-1 animate-pulse">
+                        {String(item.value).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs md:text-sm font-bold text-amber-700">
+                        {item.labelAr}
+                      </div>
+                      <div className="text-xs md:text-sm font-semibold text-red-800">
+                        {item.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 text-center">
+                <div className="flex items-center justify-center gap-2 text-emerald-300 text-lg font-semibold">
+                  <span className="text-2xl">🌙</span>
+                  <span>رمضان كريم</span>
+                  <span className="text-2xl">✨</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
