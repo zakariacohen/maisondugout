@@ -8,6 +8,7 @@ export interface Product {
   stock: number;
   stock_alert_threshold: number;
   icon: string;
+  category: string;
 }
 
 export const useProducts = () => {
