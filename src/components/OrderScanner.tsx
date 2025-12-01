@@ -47,30 +47,39 @@ export const OrderScanner = ({ onScanComplete }: OrderScannerProps) => {
     setIsScanning(true);
     try {
       console.log('Sending image to scan-order function...');
+      console.log('Image size:', base64Image.length);
       
       const { data, error } = await supabase.functions.invoke('scan-order', {
         body: { image: base64Image }
       });
 
+      console.log('Response received:', { data, error });
+
       if (error) {
         console.error('Scan error:', error);
+        toast.error(`Erreur: ${error.message}`);
         throw error;
       }
 
       console.log('Scan result:', data);
 
-      if (data.error) {
+      if (data?.error) {
+        toast.error(`Erreur AI: ${data.error}`);
         throw new Error(data.error);
       }
 
       // Pass extracted data to parent
-      onScanComplete(data);
+      if (data) {
+        onScanComplete(data);
+        toast.success("Commande scannée avec succès!");
+      } else {
+        toast.warning("Aucune donnée extraite de l'image");
+      }
       
-      toast.success("Commande scannée avec succès!");
       setPreview(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error scanning image:', error);
-      toast.error("Erreur lors du scan de la commande");
+      toast.error(`Erreur lors du scan: ${error.message || 'Erreur inconnue'}`);
     } finally {
       setIsScanning(false);
     }
