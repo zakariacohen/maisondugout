@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOrder from "./pages/PublicOrder";
+import PublicOrderRamadan from "./pages/PublicOrderRamadan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -28,7 +29,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<PublicOrder />} />
+          <Route path="/" element={<PublicOrderRamadan />} />
+          <Route path="/commande" element={<PublicOrder />} />
           <Route path="/admin" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
