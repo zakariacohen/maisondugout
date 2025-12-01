@@ -2,8 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import HomePage from "./pages/HomePage";
@@ -23,26 +22,12 @@ const queryClient = new QueryClient({
   },
 });
 
-const SubdomainRedirect = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if accessing via commande.maisondugout.ma subdomain
-    if (window.location.hostname === 'commande.maisondugout.ma') {
-      navigate('/', { replace: true });
-    }
-  }, [navigate]);
-
-  return null;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SubdomainRedirect />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<Auth />} />
