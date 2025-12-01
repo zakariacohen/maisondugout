@@ -31,7 +31,7 @@ const Auth = () => {
 
       if (data.session) {
         toast.success("Connexion réussie");
-        navigate("/");
+        navigate("/admin");
       }
     } catch (error) {
       toast.error("Erreur de connexion");

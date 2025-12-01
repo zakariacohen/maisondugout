@@ -19,6 +19,8 @@ export const useAuth = () => {
 
         if (event === 'SIGNED_OUT') {
           navigate('/auth');
+        } else if (event === 'SIGNED_IN') {
+          navigate('/admin');
         }
       }
     );

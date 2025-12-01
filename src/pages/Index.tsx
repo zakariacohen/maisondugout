@@ -245,7 +245,7 @@ const Index = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const orderLink = `${window.location.origin}/commander`;
+                  const orderLink = `${window.location.origin}/`;
                   navigator.clipboard.writeText(orderLink);
                   toast.success("Lien de commande copié ! Partagez-le avec vos clients.");
                 }}
@@ -391,7 +391,7 @@ const Index = () => {
                         variant="outline"
                         size="lg"
                         onClick={() => {
-                          const orderLink = `${window.location.origin}/commander`;
+                          const orderLink = `${window.location.origin}/`;
                           navigator.clipboard.writeText(orderLink);
                           toast.success("Lien de commande copié !");
                           setMobileMenuOpen(false);
