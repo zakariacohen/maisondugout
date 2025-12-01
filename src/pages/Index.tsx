@@ -37,6 +37,7 @@ const Index = () => {
   const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts" | "dashboard">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
   const { user, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -83,6 +84,12 @@ const Index = () => {
     let wasHidden = false;
 
     const handleVisibilityChange = () => {
+      // Don't reload if we're in the middle of scanning
+      if (isScanning) {
+        console.log('Scan in progress, skipping reload');
+        return;
+      }
+      
       if (document.visibilityState === "hidden") {
         wasHidden = true;
       } else if (document.visibilityState === "visible" && wasHidden) {
@@ -92,6 +99,12 @@ const Index = () => {
     };
 
     const handlePageShow = (event: any) => {
+      // Don't reload if we're in the middle of scanning
+      if (isScanning) {
+        console.log('Scan in progress, skipping reload');
+        return;
+      }
+      
       if (event.persisted) {
         window.location.reload();
       }
@@ -104,7 +117,7 @@ const Index = () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pageshow", handlePageShow);
     };
-  }, []);
+  }, [isScanning]);
 
   const handleAddOrder = async (order: Order) => {
     try {
@@ -350,6 +363,7 @@ const Index = () => {
                 setEditingOrder(null);
                 setView("pending");
               }}
+              onScanningChange={setIsScanning}
             />
           ) : view === "pending" ? (
             <OrderList 

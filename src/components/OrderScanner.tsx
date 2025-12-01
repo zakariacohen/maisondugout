@@ -16,9 +16,10 @@ interface ScannedData {
 
 interface OrderScannerProps {
   onScanComplete: (data: ScannedData) => void;
+  onScanningChange?: (isScanning: boolean) => void;
 }
 
-export const OrderScanner = ({ onScanComplete }: OrderScannerProps) => {
+export const OrderScanner = ({ onScanComplete, onScanningChange }: OrderScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,6 +46,7 @@ export const OrderScanner = ({ onScanComplete }: OrderScannerProps) => {
 
   const scanImage = async (base64Image: string) => {
     setIsScanning(true);
+    onScanningChange?.(true);
     try {
       console.log('Sending image to scan-order function...');
       console.log('Image size:', base64Image.length);
@@ -82,6 +84,7 @@ export const OrderScanner = ({ onScanComplete }: OrderScannerProps) => {
       toast.error(`Erreur lors du scan: ${error.message || 'Erreur inconnue'}`);
     } finally {
       setIsScanning(false);
+      onScanningChange?.(false);
     }
   };
 
