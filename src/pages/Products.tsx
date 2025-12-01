@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Pencil, Trash2, Package, Loader2, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2, AlertTriangle, icons, LucideIcon } from "lucide-react";
+import { IconSelector } from "@/components/IconSelector";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -41,12 +42,14 @@ const Products = () => {
     price: number;
     stock: number;
     stock_alert_threshold: number;
+    icon: string;
   } | null>(null);
   const [newProduct, setNewProduct] = useState({ 
     name: "", 
     price: "", 
     stock: "0", 
-    stock_alert_threshold: "10" 
+    stock_alert_threshold: "10",
+    icon: "Package"
   });
 
   // Get low stock products
@@ -65,7 +68,8 @@ const Products = () => {
           name: newProduct.name.trim(), 
           price: parseFloat(newProduct.price),
           stock: parseInt(newProduct.stock) || 0,
-          stock_alert_threshold: parseInt(newProduct.stock_alert_threshold) || 10
+          stock_alert_threshold: parseInt(newProduct.stock_alert_threshold) || 10,
+          icon: newProduct.icon || "Package"
         }
       ]);
 
@@ -75,7 +79,7 @@ const Products = () => {
     }
 
     toast.success("Produit ajouté avec succès");
-    setNewProduct({ name: "", price: "", stock: "0", stock_alert_threshold: "10" });
+    setNewProduct({ name: "", price: "", stock: "0", stock_alert_threshold: "10", icon: "Package" });
     setIsAddDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ["products"] });
   };
@@ -92,7 +96,8 @@ const Products = () => {
         name: editingProduct.name.trim(), 
         price: editingProduct.price,
         stock: editingProduct.stock,
-        stock_alert_threshold: editingProduct.stock_alert_threshold
+        stock_alert_threshold: editingProduct.stock_alert_threshold,
+        icon: editingProduct.icon || "Package"
       })
       .eq("id", editingProduct.id);
 
@@ -186,6 +191,13 @@ const Products = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="icon">Icône</Label>
+                <IconSelector
+                  value={newProduct.icon}
+                  onSelect={(iconName) => setNewProduct({ ...newProduct, icon: iconName })}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="price">Prix (Dh)</Label>
                 <Input
                   id="price"
@@ -258,6 +270,10 @@ const Products = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
+                        {(() => {
+                          const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
+                          return <IconComponent className="w-5 h-5 text-primary" />;
+                        })()}
                         <CardTitle className="text-lg">{product.name}</CardTitle>
                         {isOutOfStock && (
                           <Badge variant="destructive" className="text-xs">
@@ -314,6 +330,13 @@ const Products = () => {
                                 id="edit-name"
                                 value={editingProduct?.name || ""}
                                 onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, name: e.target.value} : null)}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-icon">Icône</Label>
+                              <IconSelector
+                                value={editingProduct?.icon || "Package"}
+                                onSelect={(iconName) => setEditingProduct(editingProduct ? {...editingProduct, icon: iconName} : null)}
                               />
                             </div>
                             <div className="space-y-2">
