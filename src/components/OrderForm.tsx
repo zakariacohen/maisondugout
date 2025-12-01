@@ -156,66 +156,129 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
 
   const handleVoiceTranscription = (text: string) => {
     console.log('Voice transcription:', text);
-    
-    // Parse the transcription text to extract order information
-    const lowerText = text.toLowerCase();
-    
-    // Try to extract customer name (usually at the beginning)
-    const nameMatch = text.match(/(?:nom|client|pour)\s*:?\s*([A-ZÀ-ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-ÿ][a-zà-ÿ]+)*)/i);
-    if (nameMatch && nameMatch[1]) {
-      setCustomerName(nameMatch[1]);
+
+    const normalized = text.trim();
+
+    // --- Extract customer name ---
+    let extractedName: string | null = null;
+
+    const namePatterns = [
+      /mon\s+nom\s+est\s+([^,.]+)/i,
+      /je\s+m'appelle\s+([^,.]+)/i,
+      /(?:client|pour)\s+([^,.]+)/i,
+      /(?:nom|client)\s*:?\s*([A-ZÀ-ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-ÿ][a-zà-ÿ]+)*)/i,
+    ];
+
+    for (const pattern of namePatterns) {
+      const match = normalized.match(pattern);
+      if (match && match[1]) {
+        extractedName = match[1].trim();
+        break;
+      }
     }
-    
-    // Try to extract phone number
-    const phoneMatch = text.match(/(?:téléphone|numéro|tel|phone)\s*:?\s*((?:\+?212\s?)?0?\d[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2})/i);
+
+    if (extractedName) {
+      setCustomerName(extractedName);
+    }
+
+    // --- Extract phone number anywhere in text ---
+    const phonePattern = /((?:\+?212[\s.-]?)?0?\d[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2})/;
+    const phoneMatch = normalized.match(phonePattern);
     if (phoneMatch && phoneMatch[1]) {
-      setPhoneNumber(phoneMatch[1].replace(/[\s.-]/g, ''));
+      const cleaned = phoneMatch[1].replace(/[\s.-]/g, '');
+      setPhoneNumber(cleaned);
     }
-    
-    // Try to extract products mentioned
-    const productNames = products?.map(p => p.name.toLowerCase()) || [];
+
+    // --- Extract products from known catalog ---
+    const lowerText = normalized.toLowerCase();
+    const productNames = products?.map((p) => p.name.toLowerCase()) || [];
     const mentionedProducts: OrderItem[] = [];
-    
+
     productNames.forEach((productName) => {
       if (lowerText.includes(productName)) {
-        const product = products?.find(p => p.name.toLowerCase() === productName);
+        const product = products?.find((p) => p.name.toLowerCase() === productName);
         if (product) {
-          // Try to find quantity near the product name
           const productIndex = lowerText.indexOf(productName);
-          const beforeProduct = lowerText.substring(Math.max(0, productIndex - 20), productIndex);
-          const quantityMatch = beforeProduct.match(/(\d+)/);
-          
+          const windowStart = Math.max(0, productIndex - 25);
+          const windowText = lowerText.substring(windowStart, productIndex);
+          const quantityMatch = windowText.match(/(\d{1,3})/);
+
+          const quantity = quantityMatch ? parseInt(quantityMatch[1], 10) : 1;
+
           mentionedProducts.push({
             product: product.name,
-            quantity: quantityMatch ? parseInt(quantityMatch[1]) : 1,
+            quantity,
             unitPrice: product.price,
-            total: (quantityMatch ? parseInt(quantityMatch[1]) : 1) * product.price,
+            total: quantity * product.price,
           });
         }
       }
     });
-    
+
     if (mentionedProducts.length > 0) {
       setItems(mentionedProducts);
     }
-    
-    // Try to extract delivery date
-    const dateMatch = text.match(/(?:livraison|pour le|date)\s*:?\s*(\d{1,2}[\s\/.-]\d{1,2}[\s\/.-]\d{2,4})/i);
-    if (dateMatch && dateMatch[1]) {
+
+    // --- Extract delivery date: numeric or "14 février" ---
+    let parsedDate: Date | null = null;
+
+    // Pattern A: numeric date
+    const numericDateMatch = normalized.match(
+      /(?:livraison|pour le|date)\s*(?:est|du|le)?\s*(\d{1,2}[\s\/. -]\d{1,2}[\s\/. -]\d{2,4})/i
+    );
+    if (numericDateMatch && numericDateMatch[1]) {
       try {
-        const dateParts = dateMatch[1].split(/[\s\/.-]/);
-        const day = parseInt(dateParts[0]);
-        const month = parseInt(dateParts[1]) - 1;
-        const year = dateParts[2].length === 2 ? 2000 + parseInt(dateParts[2]) : parseInt(dateParts[2]);
-        const date = new Date(year, month, day);
-        if (!isNaN(date.getTime())) {
-          setDeliveryDate(date);
-        }
+        const parts = numericDateMatch[1].split(/[\s\/. -]/);
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parts[2].length === 2 ? 2000 + parseInt(parts[2], 10) : parseInt(parts[2], 10);
+        const d = new Date(year, month, day);
+        if (!isNaN(d.getTime())) parsedDate = d;
       } catch (error) {
-        console.error('Error parsing delivery date from voice:', error);
+        console.error('Error parsing numeric delivery date from voice:', error);
       }
     }
-    
+
+    // Pattern B: "14 février"
+    if (!parsedDate) {
+      const monthNames: Record<string, number> = {
+        janvier: 0,
+        fevrier: 1,
+        février: 1,
+        mars: 2,
+        avril: 3,
+        mai: 4,
+        juin: 5,
+        juillet: 6,
+        aout: 7,
+        août: 7,
+        septembre: 8,
+        octobre: 9,
+        novembre: 10,
+        decembre: 11,
+        décembre: 11,
+      };
+
+      const monthPattern = /(?:livraison|pour le|pour|date)\s*(?:est|du|le)?\s*(\d{1,2})\s+([a-zà-ÿ]+)/i;
+      const match = normalized.toLowerCase().match(monthPattern);
+      if (match && match[1] && match[2]) {
+        const day = parseInt(match[1], 10);
+        const rawMonth = match[2];
+        const monthKey = rawMonth.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const monthIndex =
+          monthNames[monthKey] ?? monthNames[rawMonth as keyof typeof monthNames];
+        if (monthIndex !== undefined) {
+          const year = new Date().getFullYear();
+          const d = new Date(year, monthIndex, day);
+          if (!isNaN(d.getTime())) parsedDate = d;
+        }
+      }
+    }
+
+    if (parsedDate) {
+      setDeliveryDate(parsedDate);
+    }
+
     toast.success("Commande vocale traitée !");
   };
 
