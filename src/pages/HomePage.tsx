@@ -6,81 +6,111 @@ import logo from "@/assets/logo.jpg";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 relative overflow-hidden">
+      {/* Decorative Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgb(139, 69, 19) 35px, rgb(139, 69, 19) 70px)`,
+        }}></div>
+      </div>
+      
       {/* Header */}
-      <header className="py-8 px-4 border-b border-border/50 bg-background/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <header className="py-8 px-4 border-b-2 border-amber-700/30 bg-gradient-to-r from-red-900/95 via-amber-900/95 to-red-900/95 backdrop-blur relative">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMzAgMEwzNSAxNUgxNUwyMCAwSDMwWk0zMCA2MEwyNSA0NUg0NUw0MCA2MEgzMFpNMCAzMEwxNSAzNVYxNUwwIDIwVjMwWk02MCAzMEw0NSAyNVY0NUw2MCA0MFYzMFoiIGZpbGw9IiNmZmQ3MDAiIG9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-20"></div>
+        <div className="max-w-6xl mx-auto flex items-center justify-between relative z-10">
           <div className="flex items-center gap-4">
-            <img src={logo} alt="Maison du Goût" className="w-16 h-16 rounded-full shadow-lg object-cover" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl"></div>
+              <img src={logo} alt="Maison du Goût" className="w-20 h-20 rounded-full shadow-2xl object-cover border-4 border-amber-400/50 relative" />
+            </div>
             <div>
-              <h1 className="text-2xl font-serif font-bold text-foreground">Maison du Goût</h1>
-              <p className="text-sm text-muted-foreground">L'art de la pâtisserie marocaine</p>
+              <h1 className="text-3xl font-serif font-bold text-amber-100 drop-shadow-lg">
+                ميزون دو غو
+              </h1>
+              <h2 className="text-2xl font-serif font-bold text-amber-50 mb-1">Maison du Goût</h2>
+              <p className="text-sm text-amber-200/90 font-medium tracking-wide">✨ فن الحلويات المغربية الأصيلة ✨</p>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-20 px-4 relative">
+        {/* Decorative Elements */}
+        <div className="absolute top-10 left-10 text-6xl opacity-20">🌙</div>
+        <div className="absolute top-20 right-20 text-5xl opacity-20">⭐</div>
+        <div className="absolute bottom-10 left-20 text-5xl opacity-20">🏮</div>
+        
+        <div className="max-w-4xl mx-auto text-center relative">
           <div className="mb-8">
-            <span className="inline-block px-6 py-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full text-primary font-medium mb-4 border border-primary/20">
-              Bienvenue
+            <span className="inline-block px-8 py-3 bg-gradient-to-r from-red-800 via-amber-600 to-red-800 rounded-full text-amber-50 font-bold mb-4 border-2 border-amber-400 shadow-xl text-lg">
+              ✨ أهلا وسهلا - Bienvenue ✨
             </span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-serif font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Savourez la Tradition
+          <h2 className="text-5xl md:text-7xl font-serif font-bold mb-6 bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent drop-shadow-lg leading-tight">
+            تذوق التقاليد العريقة
           </h2>
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-            Découvrez nos délices artisanaux préparés avec passion. 
-            De la tradition marocaine aux créations modernes, chaque bouchée raconte une histoire.
+          <h3 className="text-4xl md:text-5xl font-serif font-bold mb-8 text-red-900">
+            Savourez la Tradition
+          </h3>
+          <p className="text-xl text-amber-900 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+            اكتشفوا حلوياتنا التقليدية المحضرة بشغف وإتقان<br/>
+            Découvrez nos délices artisanaux préparés avec passion et authenticité
           </p>
 
           {/* CTA Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Commande Classique */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-primary/30 cursor-pointer">
-              <Link to="/commande" className="block">
-                <CardContent className="p-8">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <ShoppingBag className="w-8 h-8 text-primary" />
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-4 border-amber-600/50 hover:border-amber-500 cursor-pointer bg-gradient-to-br from-amber-50 to-orange-50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIiBmaWxsPSIjZDk3NzA2IiBvcGFjaXR5PSIwLjEiLz48L3N2Zz4=')] opacity-50"></div>
+              <Link to="/commande" className="block relative z-10">
+                <CardContent className="p-10">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl border-4 border-amber-200">
+                    <ShoppingBag className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-serif font-bold mb-3 group-hover:text-primary transition-colors">
-                    Commander Maintenant
+                  <h3 className="text-3xl font-serif font-bold mb-2 text-amber-900 group-hover:text-red-800 transition-colors">
+                    الطلبات الكلاسيكية
                   </h3>
-                  <p className="text-muted-foreground mb-4">
-                    Passez votre commande en ligne et recevez nos délices chez vous
+                  <h4 className="text-2xl font-serif font-bold mb-4 text-amber-800">
+                    Commander Maintenant
+                  </h4>
+                  <p className="text-amber-900/80 mb-6 leading-relaxed font-medium">
+                    احجز طلبك واستمتع بحلوياتنا التقليدية
                   </p>
                   <Button 
-                    variant="outline" 
-                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                    className="bg-gradient-to-r from-amber-600 to-orange-700 text-white hover:from-amber-700 hover:to-orange-800 border-2 border-amber-400 shadow-lg text-lg px-8 py-3 font-bold"
                   >
-                    Accéder au formulaire
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    طلب الآن - Commander
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </CardContent>
               </Link>
             </Card>
 
             {/* Commande Ramadan */}
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-400/30 cursor-pointer bg-gradient-to-br from-purple-50/50 to-violet-50/50">
-              <Link to="/ramadan" className="block">
-                <CardContent className="p-8">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-200 to-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Sparkles className="w-8 h-8 text-purple-600" />
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-4 border-emerald-600/50 hover:border-emerald-500 cursor-pointer bg-gradient-to-br from-red-900/90 via-emerald-900/80 to-amber-900/90 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDAgMEw0NSAyMEgyMEwyNSAwSDQwWk00MCA4MEwzNSA2MEg2MEw1NSA4MEg0MFpNMCA0MEwyMCA0NVYyMEwwIDI1VjQwWk04MCA0MEw2MCAzNVY2MEw4MCA1NVY0MFoiIGZpbGw9IiNmZmQ3MDAiIG9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-30"></div>
+              <div className="absolute top-4 right-4 text-4xl animate-pulse">🌙</div>
+              <div className="absolute bottom-4 left-4 text-3xl opacity-70">✨</div>
+              <Link to="/ramadan" className="block relative z-10">
+                <CardContent className="p-10">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 via-amber-400 to-red-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl border-4 border-amber-300">
+                    <Sparkles className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-serif font-bold mb-3 bg-gradient-to-r from-purple-700 to-violet-600 bg-clip-text text-transparent">
-                    Collection Ramadan 2026
+                  <h3 className="text-3xl font-serif font-bold mb-2 text-amber-100 group-hover:text-amber-50 transition-colors drop-shadow-lg">
+                    مجموعة رمضان ٢٠٢٦
                   </h3>
-                  <p className="text-muted-foreground mb-4">
-                    Célébrez le mois sacré avec nos créations spéciales
+                  <h4 className="text-2xl font-serif font-bold mb-4 text-emerald-200">
+                    Collection Ramadan 2026
+                  </h4>
+                  <p className="text-amber-100/90 mb-6 leading-relaxed font-medium">
+                    احتفلوا بالشهر الكريم مع حلوياتنا المميزة
                   </p>
                   <Button 
-                    variant="outline" 
-                    className="border-purple-300 text-purple-700 hover:bg-purple-100 group-hover:shadow-md transition-all"
+                    className="bg-gradient-to-r from-emerald-600 via-amber-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-amber-700 border-2 border-amber-300 shadow-xl text-lg px-8 py-3 font-bold"
                   >
-                    Découvrir Ramadan
-                    <Sparkles className="w-4 h-4 ml-2 group-hover:rotate-12 transition-transform" />
+                    رمضان كريم - Découvrir
+                    <Sparkles className="w-5 h-5 ml-2 group-hover:rotate-12 transition-transform" />
                   </Button>
                 </CardContent>
               </Link>
@@ -90,34 +120,45 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-2xl">🎂</span>
+      <section className="py-20 px-4 bg-gradient-to-br from-red-900/10 via-amber-100/50 to-emerald-900/10 border-y-4 border-amber-600/30 relative">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMzAgMzBtLTE1IDBhMTUsMTUgMCAxLDAgMzAsMGExNSwxNSAwIDEsMC0zMCwwIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTc3MDYiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3N2Zz4=')] opacity-40"></div>
+        
+        <div className="max-w-6xl mx-auto relative">
+          <h3 className="text-4xl font-serif font-bold text-center mb-12 text-red-900">
+            ✨ مميزاتنا - Nos Atouts ✨
+          </h3>
+          <div className="grid md:grid-cols-3 gap-10">
+            <div className="text-center bg-white/70 backdrop-blur p-8 rounded-2xl border-4 border-amber-600/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg border-4 border-amber-200">
+                <span className="text-4xl">🎂</span>
               </div>
-              <h3 className="font-serif font-bold text-lg mb-2">Fait Maison</h3>
-              <p className="text-sm text-muted-foreground">
-                Tous nos produits sont préparés artisanalement avec des ingrédients de qualité
+              <h3 className="font-serif font-bold text-2xl mb-3 text-red-900">صنع يدوي</h3>
+              <h4 className="font-serif font-bold text-xl mb-3 text-amber-800">Fait Maison</h4>
+              <p className="text-amber-900/80 leading-relaxed font-medium">
+                جميع منتجاتنا محضرة بإتقان<br/>
+                avec des ingrédients de qualité
               </p>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-2xl">🚚</span>
+            <div className="text-center bg-white/70 backdrop-blur p-8 rounded-2xl border-4 border-emerald-600/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg border-4 border-emerald-200">
+                <span className="text-4xl">🚚</span>
               </div>
-              <h3 className="font-serif font-bold text-lg mb-2">Livraison Rapide</h3>
-              <p className="text-sm text-muted-foreground">
-                Nous livrons vos commandes rapidement à l'adresse de votre choix
+              <h3 className="font-serif font-bold text-2xl mb-3 text-red-900">توصيل سريع</h3>
+              <h4 className="font-serif font-bold text-xl mb-3 text-emerald-800">Livraison Rapide</h4>
+              <p className="text-amber-900/80 leading-relaxed font-medium">
+                نوصل طلباتكم بسرعة<br/>
+                à l'adresse de votre choix
               </p>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-2xl">💝</span>
+            <div className="text-center bg-white/70 backdrop-blur p-8 rounded-2xl border-4 border-red-600/30 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center shadow-lg border-4 border-red-200">
+                <span className="text-4xl">💝</span>
               </div>
-              <h3 className="font-serif font-bold text-lg mb-2">Service Personnalisé</h3>
-              <p className="text-sm text-muted-foreground">
-                Chaque commande est traitée avec soin pour garantir votre satisfaction
+              <h3 className="font-serif font-bold text-2xl mb-3 text-red-900">خدمة شخصية</h3>
+              <h4 className="font-serif font-bold text-xl mb-3 text-red-800">Service Personnalisé</h4>
+              <p className="text-amber-900/80 leading-relaxed font-medium">
+                نهتم بكل طلب لضمان رضاكم<br/>
+                avec soin et passion
               </p>
             </div>
           </div>
@@ -125,10 +166,15 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border/50">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-sm text-muted-foreground">
-            © 2025 Maison du Goût. Tous droits réservés.
+      <footer className="py-10 px-4 border-t-4 border-amber-600/50 bg-gradient-to-r from-red-900 via-amber-900 to-red-900 relative">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgMEwyNSAxNUgxNUwyMCAwWk0yMCA0MEwxNSAyNUgyNUwyMCA0MFpNMCAyMEwxNSAyNVYxNUwwIDIwWk00MCAyMEwyNSAxNVYyNUw0MCAyMFoiIGZpbGw9IiNmZmQ3MDAiIG9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-20"></div>
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <div className="mb-4">
+            <p className="text-xl font-serif font-bold text-amber-100 mb-2">ميزون دو غو</p>
+            <p className="text-lg font-serif text-amber-200">Maison du Goût</p>
+          </div>
+          <p className="text-sm text-amber-300/90 font-medium">
+            © ٢٠٢٥ - 2025 Maison du Goût. جميع الحقوق محفوظة - Tous droits réservés.
           </p>
         </div>
       </footer>
