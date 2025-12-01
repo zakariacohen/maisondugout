@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp, PackageX } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp, PackageX, ExternalLink, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
@@ -242,6 +242,20 @@ const Index = () => {
                 <span className="hidden md:inline">Nouvelle</span>
               </Button>
               <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const orderLink = `${window.location.origin}/commander`;
+                  navigator.clipboard.writeText(orderLink);
+                  toast.success("Lien de commande copié ! Partagez-le avec vos clients.");
+                }}
+                className="transition-all px-2 sm:px-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/50 hover:border-green-500"
+                title="Copier le lien de commande en ligne"
+              >
+                <Share2 className="w-4 h-4 sm:mr-2" />
+                <span className="hidden lg:inline">Commandes en ligne</span>
+              </Button>
+              <Button
                 variant={view === "pending" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("pending")}
@@ -372,6 +386,22 @@ const Index = () => {
                       <TrendingUp className="w-5 h-5 mr-3" />
                       Statistiques
                     </Button>
+                    <div className="border-t pt-3 mt-2">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => {
+                          const orderLink = `${window.location.origin}/commander`;
+                          navigator.clipboard.writeText(orderLink);
+                          toast.success("Lien de commande copié !");
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full justify-start bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/50"
+                      >
+                        <Share2 className="w-5 h-5 mr-3" />
+                        Lien Commande en Ligne
+                      </Button>
+                    </div>
                     <Button
                       variant="outline"
                       size="lg"
