@@ -279,17 +279,29 @@ export default function PublicOrderRamadan() {
             <div className="relative bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-red-950 py-4 px-8 border-4 border-amber-300 shadow-2xl" style={{
               clipPath: 'polygon(8% 0%, 92% 0%, 100% 50%, 92% 100%, 8% 100%, 0% 50%)'
             }}>
-              <p className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3 px-8">
-                <Sparkles className="w-7 h-7" />
-                <span>Commandes Spéciales Ramadan</span>
-                <Sparkles className="w-7 h-7" />
+              <p className="text-2xl md:text-3xl font-bold flex flex-col items-center justify-center gap-2 px-8">
+                <span className="flex items-center gap-3">
+                  <Sparkles className="w-7 h-7" />
+                  <span>طلبات رمضان المباركة</span>
+                  <Sparkles className="w-7 h-7" />
+                </span>
+                <span className="text-xl">Commandes Spéciales Ramadan</span>
               </p>
             </div>
           </div>
           
-          <p className="text-amber-100 text-xl font-medium drop-shadow-lg max-w-2xl mx-auto leading-relaxed">
-            Célébrez le mois sacré avec nos délices traditionnels faits maison
-          </p>
+          <div className="space-y-3 mb-6">
+            <p className="text-amber-100 text-2xl font-bold drop-shadow-lg">
+              🌙 اللهم بلغنا رمضان 🌙
+            </p>
+            <p className="text-emerald-300 text-xl font-semibold drop-shadow-lg">
+              كل عام وأنتم بخير - تقبل الله منا ومنكم
+            </p>
+            <p className="text-amber-100 text-lg font-medium drop-shadow-lg max-w-2xl mx-auto leading-relaxed">
+              احتفلوا بالشهر الفضيل مع حلوياتنا التقليدية<br/>
+              Célébrez le mois sacré avec nos délices traditionnels faits maison
+            </p>
+          </div>
           
           {/* Decorative border */}
           <div className="mt-6 flex items-center justify-center gap-2">
@@ -321,12 +333,18 @@ export default function PublicOrderRamadan() {
                   <span className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-600 text-white flex items-center justify-center text-lg shadow-xl border-2 border-white font-bold">
                     ١
                   </span>
-                  <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
-                    Nos Produits Ramadan
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
+                      اختر منتجاتك
+                    </span>
+                    <span className="text-lg text-red-800">
+                      Nos Produits Ramadan
+                    </span>
+                  </div>
                   <span className="text-2xl">🥮</span>
                 </CardTitle>
                 <CardDescription className="text-red-900 font-medium text-base mt-2">
+                  اختاروا ما تفضلونه من حلويات رمضان<br/>
                   Sélectionnez vos délices préférés pour ce mois béni
                 </CardDescription>
                 <div className="relative mt-4">
@@ -417,9 +435,14 @@ export default function PublicOrderRamadan() {
                     <span className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-600 text-white flex items-center justify-center text-lg shadow-xl border-2 border-white font-bold">
                       ٢
                     </span>
-                    <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
-                      Vos Informations
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
+                        معلوماتك
+                      </span>
+                      <span className="text-lg text-red-800">
+                        Vos Informations
+                      </span>
+                    </div>
                     <span className="text-2xl">📝</span>
                   </CardTitle>
                 </CardHeader>
@@ -514,9 +537,14 @@ export default function PublicOrderRamadan() {
                     <span className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-600 text-white flex items-center justify-center text-lg shadow-xl border-2 border-white font-bold">
                       ٣
                     </span>
-                    <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
-                      Votre Panier
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className="bg-gradient-to-r from-red-900 via-amber-700 to-red-900 bg-clip-text text-transparent font-bold">
+                        سلة المشتريات
+                      </span>
+                      <span className="text-lg text-red-800">
+                        Votre Panier
+                      </span>
+                    </div>
                     <span className="text-2xl">🛒</span>
                   </CardTitle>
                 </CardHeader>
@@ -580,21 +608,27 @@ export default function PublicOrderRamadan() {
                 disabled={isSubmitting || items.length === 0}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-400 to-yellow-400 opacity-0 group-hover:opacity-20 transition-opacity"></span>
-                <span className="relative flex items-center justify-center gap-3">
+                <span className="relative flex flex-col items-center justify-center gap-2">
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin w-6 h-6 border-3 border-white border-t-transparent rounded-full"></div>
-                      Envoi en cours...
+                      <span>جاري الإرسال... - Envoi en cours...</span>
                     </>
                   ) : (
                     <>
-                      <span className="text-2xl">🌙</span>
-                      Confirmer ma Commande Ramadan
-                      <span className="text-2xl">✨</span>
+                      <span className="text-2xl flex items-center gap-2">
+                        <span>🌙</span>
+                        <span>رمضان كريم</span>
+                        <span>🌙</span>
+                      </span>
+                      <span>Confirmer ma Commande Ramadan</span>
                     </>
                   )}
                 </span>
               </Button>
+              <p className="text-center text-emerald-300 font-semibold mt-4 text-lg">
+                بارك الله فيكم - Merci pour votre confiance
+              </p>
             </div>
           </div>
         </form>
