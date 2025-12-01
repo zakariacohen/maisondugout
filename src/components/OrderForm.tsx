@@ -32,6 +32,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   );
   const [openCombobox, setOpenCombobox] = useState<number | null>(null);
   const [showProductGrid, setShowProductGrid] = useState<number | null>(null);
+  const [gridSearchTerm, setGridSearchTerm] = useState("");
   const lastItemRef = useRef<HTMLDivElement>(null);
 
   // Update form when editingOrder changes
@@ -89,6 +90,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       };
       setItems(newItems);
       setShowProductGrid(null); // Close the grid after selection
+      setGridSearchTerm(""); // Reset search term
     }
   };
 
@@ -268,7 +270,13 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                         ) : (
                           <div className="flex gap-2">
                             {/* Grid View Dialog - Mobile Friendly */}
-                            <Dialog open={showProductGrid === index} onOpenChange={(open) => setShowProductGrid(open ? index : null)}>
+                            <Dialog 
+                              open={showProductGrid === index} 
+                              onOpenChange={(open) => {
+                                setShowProductGrid(open ? index : null);
+                                if (!open) setGridSearchTerm("");
+                              }}
+                            >
                               <DialogTrigger asChild>
                                 <Button
                                   type="button"
@@ -278,12 +286,24 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                   {item.product || "Choisir un produit"}
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
                                 <DialogHeader>
                                   <DialogTitle>Choisir un produit</DialogTitle>
                                 </DialogHeader>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-                                  {products?.map((product) => (
+                                <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+                                  <Input
+                                    type="text"
+                                    placeholder="Rechercher un produit..."
+                                    value={gridSearchTerm}
+                                    onChange={(e) => setGridSearchTerm(e.target.value)}
+                                    className="w-full"
+                                  />
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 overflow-y-auto flex-1">
+                                    {products
+                                      ?.filter((product) =>
+                                        product.name.toLowerCase().includes(gridSearchTerm.toLowerCase())
+                                      )
+                                      .map((product) => (
                                     <Card
                                       key={product.id}
                                       className={cn(
@@ -296,9 +316,10 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                         <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-primary" />
                                         <p className="font-semibold text-sm mb-1">{product.name}</p>
                                         <p className="text-primary font-bold">{product.price.toFixed(2)} Dh</p>
-                                      </CardContent>
-                                    </Card>
-                                  ))}
+                                        </CardContent>
+                                      </Card>
+                                    ))}
+                                  </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
