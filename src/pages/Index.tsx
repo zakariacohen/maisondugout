@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp, PackageX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
 import Dashboard from "@/pages/Dashboard";
 import Statistics from "@/pages/Statistics";
 import { useOrders } from "@/hooks/useOrders";
+import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -40,6 +41,7 @@ const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
+  const { data: products } = useProducts();
   const { user, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -60,6 +62,9 @@ const Index = () => {
   };
 
   const urgentOrders = getUrgentOrders();
+  
+  // Get low stock products
+  const lowStockProducts = products?.filter(p => p.stock <= p.stock_alert_threshold) || [];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -211,6 +216,20 @@ const Index = () => {
                     Alertes ({urgentOrders.length})
                   </span>
                   <span className="md:hidden">{urgentOrders.length}</span>
+                </Button>
+              )}
+              {lowStockProducts.length > 0 && (
+                <Button
+                  variant={view === "products" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setView("products")}
+                  className="transition-all px-2 sm:px-4 border-yellow-500 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950 animate-pulse"
+                >
+                  <PackageX className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden md:inline">
+                    Stock Bas ({lowStockProducts.length})
+                  </span>
+                  <span className="md:hidden">{lowStockProducts.length}</span>
                 </Button>
               )}
               <Button
