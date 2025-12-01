@@ -22,6 +22,7 @@ interface OrderCalendarProps {
 export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showOrdersDialog, setShowOrdersDialog] = useState(false);
+  const [showPendingOrdersDialog, setShowPendingOrdersDialog] = useState(false);
 
   // Get orders for selected date (delivery date or creation date if no delivery date)
   const getOrdersForDate = (date: Date) => {
@@ -105,7 +106,10 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
                   {monthlyDelivered}
                 </p>
               </div>
-              <div className="text-center p-4 bg-card/50 rounded-lg">
+              <div 
+                className="text-center p-4 bg-card/50 rounded-lg cursor-pointer hover:bg-card/80 transition-colors"
+                onClick={() => setShowPendingOrdersDialog(true)}
+              >
                 <p className="text-sm text-muted-foreground mb-1">En attente</p>
                 <p className="text-2xl md:text-3xl font-bold text-destructive">
                   {monthlyPending}
@@ -193,7 +197,7 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
         </CardContent>
       </Card>
 
-      {/* Orders Dialog */}
+      {/* Daily Orders Dialog */}
       <Dialog open={showOrdersDialog} onOpenChange={setShowOrdersDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -236,6 +240,65 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Monthly Pending Orders Dialog */}
+      <Dialog open={showPendingOrdersDialog} onOpenChange={setShowPendingOrdersDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Commandes en attente - {selectedDate && format(selectedDate, "MMMM yyyy", { locale: fr })}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {monthlyOrders
+              .filter(order => !order.delivered)
+              .sort((a, b) => {
+                const dateA = a.deliveryDate ? new Date(a.deliveryDate) : new Date(a.date);
+                const dateB = b.deliveryDate ? new Date(b.deliveryDate) : new Date(b.date);
+                return dateA.getTime() - dateB.getTime();
+              })
+              .map((order) => (
+                <Card
+                  key={order.id}
+                  className="border-destructive/50"
+                >
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-semibold">{order.customerName}</h4>
+                        <p className="text-sm text-muted-foreground">{order.phoneNumber}</p>
+                        {order.deliveryDate && (
+                          <p className="text-xs text-primary mt-1">
+                            Livraison: {format(new Date(order.deliveryDate), "d MMMM yyyy", { locale: fr })}
+                          </p>
+                        )}
+                      </div>
+                      <Badge variant="destructive">
+                        En attente
+                      </Badge>
+                    </div>
+                    <div className="space-y-1 mb-3">
+                      {order.items.map((item, idx) => (
+                        <div key={idx} className="text-sm flex justify-between">
+                          <span>
+                            {item.product} x{item.quantity}
+                          </span>
+                          <span className="font-medium">{item.total.toFixed(2)} DH</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center pt-3 border-t">
+                      <span className="font-semibold">Total</span>
+                      <span className="text-lg font-bold text-primary">
+                        {order.total.toFixed(2)} DH
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </DialogContent>
       </Dialog>
