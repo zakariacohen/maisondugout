@@ -105,29 +105,29 @@ const Dashboard = ({ orders, isLoading }: DashboardProps) => {
                   </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <CardContent className="pt-4 sm:pt-6 p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {/* Total */}
-                  <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <TrendingUp className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+                    <div className="p-2 sm:p-3 rounded-full bg-primary/10 flex-shrink-0">
+                      <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Total</p>
-                      <p className="text-2xl font-bold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium">Total</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
                         {stats.total.toFixed(2)} DH
                       </p>
                     </div>
                   </div>
 
                   {/* Bénéfice (2/3) */}
-                  <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20">
-                    <div className="p-3 rounded-full bg-accent/10">
-                      <Wallet className="w-6 h-6 text-accent" />
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20">
+                    <div className="p-2 sm:p-3 rounded-full bg-accent/10 flex-shrink-0">
+                      <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Bénéfice</p>
-                      <p className="text-2xl font-bold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium">Bénéfice</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
                         {stats.benefice.toFixed(2)} DH
                       </p>
                       <p className="text-xs text-muted-foreground">2/3 du total</p>
@@ -135,13 +135,13 @@ const Dashboard = ({ orders, isLoading }: DashboardProps) => {
                   </div>
 
                   {/* Capital (1/3) */}
-                  <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-br from-secondary to-secondary/50 border border-border">
-                    <div className="p-3 rounded-full bg-muted">
-                      <PiggyBank className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-gradient-to-br from-secondary to-secondary/50 border border-border sm:col-span-2 lg:col-span-1">
+                    <div className="p-2 sm:p-3 rounded-full bg-muted flex-shrink-0">
+                      <PiggyBank className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Capital</p>
-                      <p className="text-2xl font-bold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium">Capital</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
                         {stats.capital.toFixed(2)} DH
                       </p>
                       <p className="text-xs text-muted-foreground">1/3 du total</p>
