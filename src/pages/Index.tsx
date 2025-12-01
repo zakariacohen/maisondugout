@@ -27,6 +27,7 @@ export interface Order {
   delivered: boolean;
   deliveryImageUrl?: string;
   deliveryDate?: Date;
+  orderSource?: string;
 }
 
 export interface OrderItem {

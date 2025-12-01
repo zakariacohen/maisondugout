@@ -61,6 +61,7 @@ export type Database = {
           delivery_date: string | null
           delivery_image_url: string | null
           id: string
+          order_source: string | null
           phone_number: string
           total: number
           updated_at: string
@@ -73,6 +74,7 @@ export type Database = {
           delivery_date?: string | null
           delivery_image_url?: string | null
           id?: string
+          order_source?: string | null
           phone_number: string
           total: number
           updated_at?: string
@@ -85,6 +87,7 @@ export type Database = {
           delivery_date?: string | null
           delivery_image_url?: string | null
           id?: string
+          order_source?: string | null
           phone_number?: string
           total?: number
           updated_at?: string
