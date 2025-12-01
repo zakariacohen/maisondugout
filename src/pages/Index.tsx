@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.jpg";
+import { NotificationService } from "@/utils/notifications";
 
 export interface Order {
   id: string;
@@ -62,6 +63,19 @@ const Index = () => {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Initialize notifications
+  useEffect(() => {
+    NotificationService.initialize();
+  }, []);
+
+  // Check for urgent orders and send notifications
+  useEffect(() => {
+    if (!isLoading && urgentOrders.length > 0) {
+      NotificationService.notifyUrgentOrders(urgentOrders);
+      NotificationService.playSound();
+    }
+  }, [urgentOrders.length, isLoading]);
 
   // Fix mobile browsers (Safari / WhatsApp) freezing when coming back to the app
   useEffect(() => {
