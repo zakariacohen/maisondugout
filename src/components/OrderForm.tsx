@@ -21,9 +21,10 @@ interface OrderFormProps {
   onUpdateOrder?: (order: Order) => void;
   editingOrder?: Order | null;
   onCancelEdit?: () => void;
+  onScanningChange?: (isScanning: boolean) => void;
 }
 
-export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdit }: OrderFormProps) => {
+export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdit, onScanningChange }: OrderFormProps) => {
   const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState(editingOrder?.customerName || "");
   const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || "");
@@ -227,7 +228,10 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
               </span>
               Scanner une Commande
             </h3>
-            <OrderScanner onScanComplete={handleScanComplete} />
+            <OrderScanner 
+              onScanComplete={handleScanComplete}
+              onScanningChange={onScanningChange}
+            />
           </div>
 
           {/* Client Information */}
