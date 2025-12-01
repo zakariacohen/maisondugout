@@ -93,17 +93,23 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-card/50 rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">Total du mois</p>
                 <p className="text-2xl md:text-3xl font-bold text-primary">
                   {monthlyTotal.toFixed(2)} DH
                 </p>
               </div>
-              <div className="text-center p-4 bg-card/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Commandes livrées</p>
+              <div className="text-center p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-lg border border-green-500/20">
+                <p className="text-sm text-muted-foreground mb-1">Bénéfice (2/3)</p>
                 <p className="text-2xl md:text-3xl font-bold text-green-600">
-                  {monthlyDelivered}
+                  {((monthlyTotal * 2) / 3).toFixed(2)} DH
+                </p>
+              </div>
+              <div className="text-center p-4 bg-gradient-to-br from-orange-500/10 to-orange-600/10 rounded-lg border border-orange-500/20">
+                <p className="text-sm text-muted-foreground mb-1">Capital (1/3)</p>
+                <p className="text-2xl md:text-3xl font-bold text-orange-600">
+                  {(monthlyTotal / 3).toFixed(2)} DH
                 </p>
               </div>
               <div 
