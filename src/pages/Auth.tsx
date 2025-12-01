@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import logo from "@/assets/logo.jpg";
 
 const Auth = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,13 +19,26 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      // Chercher l'email correspondant au username
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('username', username)
+        .single();
+
+      if (profileError || !profileData) {
+        toast.error("Nom d'utilisateur incorrect");
+        return;
+      }
+
+      // Se connecter avec l'email trouvé
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: profileData.email,
         password,
       });
 
       if (error) {
-        toast.error("Identifiants incorrects");
+        toast.error("Mot de passe incorrect");
         return;
       }
 
@@ -61,15 +74,16 @@ const Auth = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Nom d'utilisateur</Label>
+              <Label htmlFor="username">Nom d'utilisateur</Label>
               <Input
-                id="email"
+                id="username"
                 type="text"
                 placeholder="maisondugout"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 disabled={isLoading}
+                autoComplete="username"
               />
             </div>
             <div className="space-y-2">
@@ -82,6 +96,7 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                autoComplete="current-password"
               />
             </div>
             <Button
