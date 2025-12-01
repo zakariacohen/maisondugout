@@ -150,17 +150,17 @@ const Products = () => {
       {/* Low Stock Alerts */}
       {lowStockProducts.length > 0 && (
         <Alert variant="destructive" className="border-2">
-          <AlertTriangle className="h-5 w-5" />
-          <AlertTitle className="font-bold">Alerte Stock Bas!</AlertTitle>
+          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+          <AlertTitle className="font-bold text-sm sm:text-base">Alerte Stock Bas!</AlertTitle>
           <AlertDescription>
-            <p className="mb-2">
+            <p className="mb-2 text-xs sm:text-sm">
               {lowStockProducts.length} produit(s) nécessitent un réapprovisionnement:
             </p>
-            <ul className="list-disc list-inside space-y-1">
+            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
               {lowStockProducts.map(product => (
                 <li key={product.id} className="font-medium">
                   {product.name}: <span className="font-bold">{product.stock}</span> unité(s) 
-                  (seuil: {product.stock_alert_threshold})
+                  <span className="text-muted-foreground"> (seuil: {product.stock_alert_threshold})</span>
                 </li>
               ))}
             </ul>
@@ -168,23 +168,23 @@ const Products = () => {
         </Alert>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-serif font-bold text-foreground">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">
             Gestion des Produits
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Gérez votre catalogue et vos stocks de pâtisseries
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Nouveau Produit
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Ajouter un nouveau produit</DialogTitle>
               <DialogDescription>
@@ -281,7 +281,7 @@ const Products = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => {
             const isLowStock = product.stock <= product.stock_alert_threshold;
             const isOutOfStock = product.stock === 0;
@@ -289,20 +289,22 @@ const Products = () => {
             return (
               <Card 
                 key={product.id} 
-                className={`shadow-md border-border/50 ${
+                className={`shadow-md border-border/50 hover:shadow-xl transition-shadow ${
                   isOutOfStock ? 'border-2 border-destructive' : 
                   isLowStock ? 'border-2 border-yellow-500' : ''
                 }`}
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         {(() => {
                           const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
-                          return <IconComponent className="w-5 h-5 text-primary" />;
+                          return <IconComponent className="w-5 h-5 text-primary flex-shrink-0" />;
                         })()}
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
+                        <CardTitle className="text-base sm:text-lg truncate">{product.name}</CardTitle>
+                      </div>
+                      <div className="flex flex-wrap gap-1 mb-2">
                         {product.category === "ramadan" && (
                           <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
                             🌙 Ramadan
@@ -329,10 +331,10 @@ const Products = () => {
                           </Badge>
                         )}
                       </div>
-                      <CardDescription className="text-lg font-semibold text-primary">
+                      <CardDescription className="text-lg sm:text-xl font-semibold text-primary">
                         {product.price.toFixed(2)} Dh
                       </CardDescription>
-                      <div className="mt-3 space-y-1">
+                      <div className="mt-2 space-y-1">
                         <p className={`text-sm font-medium ${
                           isOutOfStock ? 'text-destructive' : 
                           isLowStock ? 'text-yellow-600' : 
@@ -345,7 +347,7 @@ const Products = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 flex-shrink-0">
                       <Dialog open={editingProduct?.id === product.id} onOpenChange={(open) => {
                         if (!open) setEditingProduct(null);
                       }}>
@@ -354,12 +356,12 @@ const Products = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => setEditingProduct(product)}
-                            className="hover:bg-primary/10"
+                            className="hover:bg-primary/10 h-8 w-8"
                           >
                             <Pencil className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>Modifier le produit</DialogTitle>
                             <DialogDescription>
@@ -441,7 +443,7 @@ const Products = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="hover:bg-destructive/10 hover:text-destructive"
+                            className="hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
