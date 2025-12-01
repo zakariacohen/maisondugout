@@ -23,19 +23,23 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showOrdersDialog, setShowOrdersDialog] = useState(false);
 
-  // Get orders for selected date
+  // Get orders for selected delivery date
   const getOrdersForDate = (date: Date) => {
-    return orders.filter((order) => isSameDay(new Date(order.date), date));
+    return orders.filter((order) => 
+      order.deliveryDate && isSameDay(new Date(order.deliveryDate), date)
+    );
   };
 
-  // Calculate total for a date
+  // Calculate total for a delivery date
   const getTotalForDate = (date: Date) => {
     const dateOrders = getOrdersForDate(date);
     return dateOrders.reduce((sum, order) => sum + order.total, 0);
   };
 
-  // Get all dates that have orders
-  const datesWithOrders = orders.map((order) => new Date(order.date));
+  // Get all dates that have delivery orders
+  const datesWithOrders = orders
+    .filter((order) => order.deliveryDate)
+    .map((order) => new Date(order.deliveryDate!));
 
   // Calculate stats for selected date
   const selectedDateOrders = selectedDate ? getOrdersForDate(selectedDate) : [];
