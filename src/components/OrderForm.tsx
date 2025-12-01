@@ -132,16 +132,16 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
         if (product) {
           return {
             product: product.name,
-            quantity: scannedItem.quantity || 1,
-            unitPrice: product.price,
-            total: (scannedItem.quantity || 1) * product.price,
+            quantity: 0,
+            unitPrice: 0,
+            total: 0,
           };
         }
         
         // If no matching product found, create item with scanned info
         return {
           product: scannedItem.product,
-          quantity: scannedItem.quantity || 1,
+          quantity: 0,
           unitPrice: 0,
           total: 0,
         };
