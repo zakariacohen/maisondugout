@@ -23,32 +23,32 @@ const Auth = () => {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('email')
-        .eq('username', username)
+        .eq('username', username.trim())
         .single();
 
       if (profileError || !profileData) {
+        setIsLoading(false);
         toast.error("Nom d'utilisateur incorrect");
         return;
       }
 
       // Se connecter avec l'email trouvé
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: profileData.email,
         password,
       });
 
       if (error) {
+        setIsLoading(false);
         toast.error("Mot de passe incorrect");
         return;
       }
 
-      if (data.session) {
-        toast.success("Connexion réussie");
-        navigate("/admin");
-      }
+      toast.success("Connexion réussie");
+      navigate("/admin");
     } catch (error) {
+      console.error("Erreur de connexion:", error);
       toast.error("Erreur de connexion");
-    } finally {
       setIsLoading(false);
     }
   };
