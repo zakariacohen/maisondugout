@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Minus, CalendarIcon, ShoppingBag, Check } from "lucide-react";
+import { Plus, Minus, CalendarIcon, ShoppingBag, Check, Package, icons, LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useProducts } from "@/hooks/useProducts";
 import { format } from "date-fns";
@@ -184,23 +184,29 @@ export default function PublicOrder() {
                 {isLoading ? (
                   <div className="text-center py-8 text-muted-foreground">Chargement des produits...</div>
                 ) : products && products.length > 0 ? (
-                  products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-primary font-semibold">{product.price.toFixed(2)} DH</p>
+                  products.map((product) => {
+                    const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
+                    return (
+                      <div key={product.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors hover:shadow-md">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0">
+                          <IconComponent className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">{product.name}</p>
+                          <p className="text-sm text-primary font-semibold">{product.price.toFixed(2)} DH</p>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => addToCart(product.id, product.name, product.price)}
+                          className="hover:scale-105 transition-transform"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Ajouter
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => addToCart(product.id, product.name, product.price)}
-                        className="hover:scale-105 transition-transform"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Ajouter
-                      </Button>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p className="text-center text-muted-foreground py-8">Aucun produit disponible</p>
                 )}

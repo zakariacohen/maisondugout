@@ -7,6 +7,7 @@ export interface Product {
   price: number;
   stock: number;
   stock_alert_threshold: number;
+  icon: string;
 }
 
 export const useProducts = () => {
