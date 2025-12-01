@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import HomePage from "./pages/HomePage";
@@ -22,14 +23,27 @@ const queryClient = new QueryClient({
   },
 });
 
+const SubdomainRedirect = () => {
+  useEffect(() => {
+    // Redirect commande.maisondugout.ma to maisondugout.ma/acceuil
+    if (window.location.hostname === 'commande.maisondugout.ma') {
+      window.location.href = 'https://maisondugout.ma/acceuil';
+    }
+  }, []);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SubdomainRedirect />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/acceuil" element={<HomePage />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/commande" element={<PublicOrder />} />
           <Route path="/ramadan" element={<PublicOrderRamadan />} />
