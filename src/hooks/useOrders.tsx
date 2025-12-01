@@ -25,6 +25,7 @@ export const useOrders = () => {
         id: order.id,
         customerName: order.customer_name,
         phoneNumber: order.phone_number,
+        deliveryAddress: order.delivery_address,
         total: order.total,
         delivered: order.delivered,
         deliveryImageUrl: order.delivery_image_url,
@@ -52,6 +53,7 @@ export const useOrders = () => {
           {
             customer_name: order.customerName,
             phone_number: order.phoneNumber,
+            delivery_address: order.deliveryAddress,
             total: order.total,
             delivered: order.delivered,
             delivery_date: order.deliveryDate?.toISOString(),
@@ -90,6 +92,7 @@ export const useOrders = () => {
       deliveryImageUrl,
       customerName,
       phoneNumber,
+      deliveryAddress,
       items,
       total,
       deliveryDate,
@@ -99,6 +102,7 @@ export const useOrders = () => {
       deliveryImageUrl?: string;
       customerName?: string;
       phoneNumber?: string;
+      deliveryAddress?: string;
       items?: OrderItem[];
       total?: number;
       deliveryDate?: Date;
@@ -109,6 +113,7 @@ export const useOrders = () => {
         updateData.delivery_image_url = deliveryImageUrl;
       if (customerName !== undefined) updateData.customer_name = customerName;
       if (phoneNumber !== undefined) updateData.phone_number = phoneNumber;
+      if (deliveryAddress !== undefined) updateData.delivery_address = deliveryAddress;
       if (total !== undefined) updateData.total = total;
       if (deliveryDate !== undefined) updateData.delivery_date = deliveryDate?.toISOString();
 

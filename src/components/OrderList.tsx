@@ -72,6 +72,11 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
     
     message += `━━━━━━━━━━━━━━━━\n`;
     message += `*TOTAL: ${order.total.toFixed(2)} Dh*\n\n`;
+    
+    if (order.deliveryAddress) {
+      message += `📍 *Adresse de livraison:*\n${order.deliveryAddress}\n\n`;
+    }
+    
     message += `📞 Merci de nous contacter pour confirmer votre commande!\n`;
     message += `*Maison du Goût*`;
 
@@ -172,6 +177,12 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                   <Phone className="w-3.5 h-3.5" />
                   {order.phoneNumber}
                 </CardDescription>
+                {order.deliveryAddress && (
+                  <CardDescription className="flex items-start gap-2 text-sm">
+                    <span className="text-xs">📍</span>
+                    <span className="flex-1">{order.deliveryAddress}</span>
+                  </CardDescription>
+                )}
                 <CardDescription className="flex items-center gap-2 text-xs">
                   <Calendar className="w-3.5 h-3.5" />
                   {formatDate(order.date)}

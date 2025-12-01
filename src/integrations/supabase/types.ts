@@ -57,6 +57,7 @@ export type Database = {
           created_at: string
           customer_name: string
           delivered: boolean
+          delivery_address: string | null
           delivery_date: string | null
           delivery_image_url: string | null
           id: string
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string
           customer_name: string
           delivered?: boolean
+          delivery_address?: string | null
           delivery_date?: string | null
           delivery_image_url?: string | null
           id?: string
@@ -79,6 +81,7 @@ export type Database = {
           created_at?: string
           customer_name?: string
           delivered?: boolean
+          delivery_address?: string | null
           delivery_date?: string | null
           delivery_image_url?: string | null
           id?: string
