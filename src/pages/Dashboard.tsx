@@ -23,9 +23,9 @@ const Dashboard = ({ orders, isLoading }: DashboardProps) => {
     const stats = new Map<string, MonthlyStats>();
     
     orders
-      .filter(order => order.delivered) // Only count delivered orders
+      .filter(order => order.delivered && order.deliveryDate) // Only count delivered orders with delivery date
       .forEach(order => {
-        const date = new Date(order.date);
+        const date = new Date(order.deliveryDate!);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         
         if (!stats.has(monthKey)) {
