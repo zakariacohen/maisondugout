@@ -344,58 +344,45 @@ export default function PublicOrderRamadan() {
           </div>
         </div>
 
-        {/* Countdown Timer */}
-        <div className="mb-10 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 blur-2xl opacity-40 animate-pulse"></div>
-          <Card className="relative shadow-2xl border-4 border-amber-400 bg-gradient-to-br from-red-900/95 via-amber-900/95 to-red-950/95 backdrop-blur-sm overflow-hidden">
-            {/* Decorative patterns */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
+        {/* Countdown Timer - Compact Version */}
+        <div className="mb-6 relative">
+          <Card className="relative shadow-lg border-2 border-amber-400/50 bg-gradient-to-br from-red-900/90 via-amber-900/90 to-red-950/90 backdrop-blur-sm overflow-hidden">
+            {/* Decorative top border */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
             
-            <CardContent className="py-8 px-4">
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <Star className="w-6 h-6 text-amber-300 animate-pulse" />
-                  <h3 className="text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200">
-                    العد التنازلي لرمضان
-                  </h3>
-                  <Star className="w-6 h-6 text-amber-300 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                </div>
-                <p className="text-amber-100 text-lg font-medium">
+            <CardContent className="py-4 px-3 sm:px-4">
+              <div className="text-center mb-3">
+                <h3 className="text-base sm:text-lg font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200 flex items-center justify-center gap-2">
+                  <Star className="w-4 h-4 text-amber-300" />
+                  العد التنازلي لرمضان
+                  <Star className="w-4 h-4 text-amber-300" />
+                </h3>
+                <p className="text-amber-100 text-xs sm:text-sm font-medium">
                   Compte à Rebours jusqu'au Ramadan 2026
                 </p>
               </div>
               
-              <div className="grid grid-cols-4 gap-4 max-w-3xl mx-auto">
+              <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto">
                 {[
                   { value: timeLeft.days, label: 'Jours', labelAr: 'يوم' },
                   { value: timeLeft.hours, label: 'Heures', labelAr: 'ساعة' },
                   { value: timeLeft.minutes, label: 'Minutes', labelAr: 'دقيقة' },
                   { value: timeLeft.seconds, label: 'Secondes', labelAr: 'ثانية' },
                 ].map((item, index) => (
-                  <div key={index} className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-yellow-600 blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                    <div className="relative bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border-3 border-amber-400 shadow-xl transform transition-transform group-hover:scale-105">
-                      <div className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-red-900 via-amber-700 to-red-900 mb-1 animate-pulse">
+                  <div key={index} className="relative">
+                    <div className="bg-gradient-to-br from-amber-50 to-white p-2 sm:p-3 rounded-lg border-2 border-amber-400/70 shadow-md">
+                      <div className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-red-900 via-amber-700 to-red-900">
                         {String(item.value).padStart(2, '0')}
                       </div>
-                      <div className="text-xs md:text-sm font-bold text-amber-700">
+                      <div className="text-xs font-bold text-amber-700">
                         {item.labelAr}
                       </div>
-                      <div className="text-xs md:text-sm font-semibold text-red-800">
+                      <div className="text-xs font-semibold text-red-800 hidden sm:block">
                         {item.label}
                       </div>
                     </div>
                   </div>
                 ))}
-              </div>
-              
-              <div className="mt-6 text-center">
-                <div className="flex items-center justify-center gap-2 text-emerald-300 text-lg font-semibold">
-                  <span className="text-2xl">🌙</span>
-                  <span>رمضان كريم</span>
-                  <span className="text-2xl">✨</span>
-                </div>
               </div>
             </CardContent>
           </Card>
