@@ -29,8 +29,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<PublicOrderRamadan />} />
-          <Route path="/commande" element={<PublicOrder />} />
+          <Route path="/" element={<PublicOrder />} />
+          <Route path="/ramadan" element={<PublicOrderRamadan />} />
           <Route path="/admin" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
