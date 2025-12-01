@@ -40,7 +40,7 @@ Extrait les informations suivantes si elles sont disponibles:
 - Nom du client (customerName)
 - Numéro de téléphone (phoneNumber)
 - Date de livraison (deliveryDate) au format YYYY-MM-DD
-- Liste des produits avec leurs quantités (items)
+- Liste des produits avec leurs quantités, prix unitaires et totaux (items)
 
 Retourne UNIQUEMENT un objet JSON valide avec cette structure:
 {
@@ -48,11 +48,19 @@ Retourne UNIQUEMENT un objet JSON valide avec cette structure:
   "phoneNumber": "numéro ou null", 
   "deliveryDate": "YYYY-MM-DD ou null",
   "items": [
-    {"product": "nom du produit", "quantity": nombre}
+    {
+      "product": "nom du produit", 
+      "quantity": nombre ou null,
+      "unitPrice": prix_unitaire ou null,
+      "total": total ou null
+    }
   ]
 }
 
-Si une information n'est pas lisible ou absente, mets null. Ne retourne RIEN d'autre que le JSON.`
+Si une information n'est pas lisible ou absente, mets null pour ce champ spécifique. 
+Si le total est écrit mais pas le prix unitaire, essaie de calculer: unitPrice = total / quantity.
+Si le prix unitaire est écrit mais pas le total, calcule: total = unitPrice * quantity.
+Ne retourne RIEN d'autre que le JSON.`
           },
           {
             role: "user",
