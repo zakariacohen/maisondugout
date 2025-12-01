@@ -1,6 +1,15 @@
-import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
-import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
+
+// Dynamic imports for Capacitor plugins (only loaded on native platforms)
+let LocalNotifications: any = null;
+let PushNotifications: any = null;
+
+const loadCapacitorPlugins = async () => {
+  if (Capacitor.isNativePlatform()) {
+    LocalNotifications = (await import('@capacitor/local-notifications')).LocalNotifications;
+    PushNotifications = (await import('@capacitor/push-notifications')).PushNotifications;
+  }
+};
 
 export class NotificationService {
   static async initialize() {
@@ -11,6 +20,14 @@ export class NotificationService {
     }
 
     try {
+      // Load plugins first
+      await loadCapacitorPlugins();
+      
+      if (!LocalNotifications || !PushNotifications) {
+        console.log('Capacitor plugins not available');
+        return;
+      }
+
       // Request permissions
       const permissionResult = await LocalNotifications.requestPermissions();
       
@@ -53,8 +70,15 @@ export class NotificationService {
       return;
     }
 
+    await loadCapacitorPlugins();
+    
+    if (!LocalNotifications) {
+      console.log('LocalNotifications not available');
+      return;
+    }
+
     try {
-      const notifications: ScheduleOptions = {
+      const notifications = {
         notifications: [
           {
             title: '⚠️ Commande Urgente',
@@ -87,8 +111,15 @@ export class NotificationService {
 
     if (urgentOrders.length === 0) return;
 
+    await loadCapacitorPlugins();
+    
+    if (!LocalNotifications) {
+      console.log('LocalNotifications not available');
+      return;
+    }
+
     try {
-      const notifications: ScheduleOptions = {
+      const notifications = {
         notifications: urgentOrders.map((order, index) => ({
           title: '⚠️ Commandes Urgentes',
           body: `${urgentOrders.length} commande(s) à livrer aujourd'hui, dont ${order.customerName}`,
