@@ -32,6 +32,18 @@ interface OrderListProps {
 export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrder, isLoading, title = "Mes Commandes" }: OrderListProps) => {
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
   
+  const isUrgentOrder = (order: Order) => {
+    if (order.delivered || !order.deliveryDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const deliveryDate = new Date(order.deliveryDate);
+    deliveryDate.setHours(0, 0, 0, 0);
+    
+    return deliveryDate <= today;
+  };
+  
   const toggleOrderExpanded = (orderId: string) => {
     const newExpanded = new Set(expandedOrders);
     if (newExpanded.has(orderId)) {
@@ -117,13 +129,28 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
         </Badge>
       </div>
 
-      {orders.map((order) => (
-        <Card key={order.id} className="shadow-md border-border/50 hover:shadow-lg transition-shadow">
+      {orders.map((order) => {
+        const isUrgent = isUrgentOrder(order);
+        return (
+        <Card 
+          key={order.id} 
+          className={`shadow-md border-border/50 hover:shadow-lg transition-shadow ${
+            isUrgent ? 'border-2 border-destructive bg-destructive/5' : ''
+          }`}
+        >
           <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
             <div className="flex justify-between items-start">
               <div className="space-y-1 flex-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <CardTitle className="text-xl font-serif">{order.customerName}</CardTitle>
+                  {isUrgent && (
+                    <Badge 
+                      variant="destructive"
+                      className="flex items-center gap-1 animate-pulse"
+                    >
+                      ⚠️ URGENT
+                    </Badge>
+                  )}
                   <Badge 
                     variant={order.delivered ? "default" : "destructive"}
                     className="flex items-center gap-1"
@@ -324,7 +351,8 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
             })()}
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
     </div>
   );
 };

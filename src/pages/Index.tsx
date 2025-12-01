@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
@@ -32,12 +32,30 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar">("form");
+  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
   const { user, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Calculate urgent orders (delivery date is today or past, and not delivered)
+  const getUrgentOrders = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return orders.filter(order => {
+      if (order.delivered) return false;
+      if (!order.deliveryDate) return false;
+      
+      const deliveryDate = new Date(order.deliveryDate);
+      deliveryDate.setHours(0, 0, 0, 0);
+      
+      return deliveryDate <= today;
+    });
+  };
+
+  const urgentOrders = getUrgentOrders();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -168,6 +186,20 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-1 sm:gap-2 items-center justify-end max-w-full">
+              {urgentOrders.length > 0 && (
+                <Button
+                  variant={view === "alerts" ? "default" : "destructive"}
+                  size="sm"
+                  onClick={() => setView("alerts")}
+                  className="transition-all px-2 sm:px-4 relative animate-pulse"
+                >
+                  <AlertCircle className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden md:inline">
+                    Alertes ({urgentOrders.length})
+                  </span>
+                  <span className="md:hidden">{urgentOrders.length}</span>
+                </Button>
+              )}
               <Button
                 variant={view === "form" ? "default" : "outline"}
                 size="sm"
@@ -323,6 +355,19 @@ const Index = () => {
               onEditOrder={handleEditOrder}
               isLoading={isLoading}
               title="Commandes Livrées"
+            />
+          ) : view === "alerts" ? (
+            <OrderList 
+              orders={urgentOrders.sort((a, b) => {
+                const dateA = new Date(a.deliveryDate!);
+                const dateB = new Date(b.deliveryDate!);
+                return dateA.getTime() - dateB.getTime();
+              })} 
+              onDeleteOrder={handleDeleteOrder}
+              onToggleDelivered={handleToggleDelivered}
+              onEditOrder={handleEditOrder}
+              isLoading={isLoading}
+              title="⚠️ Commandes Urgentes"
             />
           ) : view === "calendar" ? (
             <OrderCalendar 
