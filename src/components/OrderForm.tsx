@@ -29,6 +29,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState(editingOrder?.customerName || "");
   const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || "");
+  const [deliveryAddress, setDeliveryAddress] = useState(editingOrder?.deliveryAddress || "");
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(editingOrder?.deliveryDate);
   const [items, setItems] = useState<OrderItem[]>(
     editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
@@ -43,11 +44,13 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (editingOrder) {
       setCustomerName(editingOrder.customerName);
       setPhoneNumber(editingOrder.phoneNumber);
+      setDeliveryAddress(editingOrder.deliveryAddress || "");
       setDeliveryDate(editingOrder.deliveryDate);
       setItems(editingOrder.items);
     } else {
       setCustomerName("");
       setPhoneNumber("");
+      setDeliveryAddress("");
       setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
@@ -303,6 +306,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       id: editingOrder?.id || "",
       customerName: customerName.trim(),
       phoneNumber: phoneNumber.trim(),
+      deliveryAddress: deliveryAddress.trim() || undefined,
       items: items.map(item => ({
         ...item,
         product: item.product.trim(),
@@ -327,6 +331,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     if (!editingOrder) {
       setCustomerName("");
       setPhoneNumber("");
+      setDeliveryAddress("");
       setDeliveryDate(undefined);
       setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
@@ -394,6 +399,17 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="transition-all focus:shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="deliveryAddress">Adresse de Livraison (optionnelle)</Label>
+                <Input
+                  id="deliveryAddress"
+                  placeholder="Ex: 123 Rue Mohammed V, Casablanca"
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  className="transition-all focus:shadow-sm"
+                  maxLength={200}
                 />
               </div>
             </div>

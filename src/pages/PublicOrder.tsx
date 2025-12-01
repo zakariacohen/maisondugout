@@ -25,12 +25,14 @@ interface OrderItem {
 const orderSchema = z.object({
   customerName: z.string().trim().min(2, "Le nom doit contenir au moins 2 caractères").max(100),
   phoneNumber: z.string().trim().min(10, "Numéro invalide").max(20),
+  deliveryAddress: z.string().trim().min(5, "L'adresse doit contenir au moins 5 caractères").max(200),
 });
 
 export default function PublicOrder() {
   const { data: products, isLoading } = useProducts();
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>();
   const [items, setItems] = useState<OrderItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +77,7 @@ export default function PublicOrder() {
     
     // Validation
     try {
-      orderSchema.parse({ customerName, phoneNumber });
+      orderSchema.parse({ customerName, phoneNumber, deliveryAddress });
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
@@ -97,6 +99,7 @@ export default function PublicOrder() {
         .insert({
           customer_name: customerName.trim(),
           phone_number: phoneNumber.trim(),
+          delivery_address: deliveryAddress.trim(),
           total: calculateTotal(),
           delivered: false,
           delivery_date: deliveryDate?.toISOString() || null,
@@ -128,6 +131,7 @@ export default function PublicOrder() {
       setTimeout(() => {
         setCustomerName("");
         setPhoneNumber("");
+        setDeliveryAddress("");
         setDeliveryDate(undefined);
         setItems([]);
         setOrderSuccess(false);
@@ -286,6 +290,17 @@ export default function PublicOrder() {
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       required
                       maxLength={20}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="deliveryAddress">Adresse de Livraison *</Label>
+                    <Input
+                      id="deliveryAddress"
+                      placeholder="Ex: 123 Rue Mohammed V, Casablanca"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      required
+                      maxLength={200}
                     />
                   </div>
                   <div className="space-y-2">

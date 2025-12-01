@@ -20,6 +20,7 @@ export interface Order {
   id: string;
   customerName: string;
   phoneNumber: string;
+  deliveryAddress?: string;
   items: OrderItem[];
   total: number;
   date: Date;
@@ -142,6 +143,7 @@ const Index = () => {
         orderId: order.id,
         customerName: order.customerName,
         phoneNumber: order.phoneNumber,
+        deliveryAddress: order.deliveryAddress,
         items: order.items,
         total: order.total,
         deliveryDate: order.deliveryDate,
