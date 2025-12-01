@@ -206,19 +206,19 @@ const Index = () => {
                 <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Gestion des Commandes</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-1 sm:gap-2 items-center justify-end max-w-full">
+            <div className="flex flex-wrap gap-1 sm:gap-2 md:gap-2.5 items-center justify-end max-w-full">
               {urgentOrders.length > 0 && (
                 <Button
                   variant={view === "alerts" ? "default" : "destructive"}
                   size="sm"
                   onClick={() => setView("alerts")}
-                  className="transition-all px-2 sm:px-4 relative animate-pulse"
+                  className="transition-all px-3 sm:px-4 relative animate-pulse"
                 >
-                  <AlertCircle className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden md:inline">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">
                     Alertes ({urgentOrders.length})
                   </span>
-                  <span className="md:hidden">{urgentOrders.length}</span>
+                  <span className="sm:hidden">{urgentOrders.length}</span>
                 </Button>
               )}
               {lowStockProducts.length > 0 && (
@@ -226,101 +226,101 @@ const Index = () => {
                   variant={view === "products" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setView("products")}
-                  className="transition-all px-2 sm:px-4 border-yellow-500 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950 animate-pulse"
+                  className="transition-all px-3 sm:px-4 border-yellow-500 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950 animate-pulse"
                 >
-                  <PackageX className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden md:inline">
+                  <PackageX className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">
                     Stock Bas ({lowStockProducts.length})
                   </span>
-                  <span className="md:hidden">{lowStockProducts.length}</span>
+                  <span className="sm:hidden">{lowStockProducts.length}</span>
                 </Button>
               )}
               <Button
                 variant={view === "form" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("form")}
-                className="transition-all px-2 sm:px-4"
+                className="transition-all px-3 sm:px-4"
               >
-                <Plus className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Nouvelle</span>
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Nouvelle</span>
               </Button>
               <Button
                 variant={view === "pending" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("pending")}
-                className="transition-all px-2 sm:px-4"
+                className="transition-all px-3 sm:px-4"
               >
-                <Clock className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">
+                <Clock className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">
                   En attente ({orders.filter(o => !o.delivered).length})
                 </span>
-                <span className="md:hidden">{orders.filter(o => !o.delivered).length}</span>
+                <span className="sm:hidden">{orders.filter(o => !o.delivered).length}</span>
               </Button>
               <Button
                 variant={view === "delivered" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("delivered")}
-                className="transition-all px-2 sm:px-4"
+                className="transition-all px-3 sm:px-4"
               >
-                <CheckCircle2 className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">
                   Livrées ({orders.filter(o => o.delivered).length})
                 </span>
-                <span className="md:hidden">{orders.filter(o => o.delivered).length}</span>
+                <span className="sm:hidden">{orders.filter(o => o.delivered).length}</span>
               </Button>
               <Button
                 variant={view === "products" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("products")}
-                className="transition-all px-2 sm:px-3 hidden sm:flex"
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
               >
-                <Package className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Produits</span>
+                <Package className="w-4 h-4 mr-2" />
+                <span>Produits</span>
               </Button>
               <Button
                 variant={view === "calendar" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("calendar")}
-                className="transition-all px-2 sm:px-3 hidden sm:flex"
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
               >
-                <CalendarDays className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Calendrier</span>
+                <CalendarDays className="w-4 h-4 mr-2" />
+                <span>Calendrier</span>
               </Button>
               <Button
                 variant={view === "dashboard" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("dashboard")}
-                className="transition-all px-2 sm:px-3 hidden sm:flex"
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
               >
-                <BarChart3 className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Dashboard</span>
+                <BarChart3 className="w-4 h-4 mr-2" />
+                <span>Dashboard</span>
               </Button>
               <Button
                 variant={view === "statistics" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setView("statistics")}
-                className="transition-all px-2 sm:px-3 hidden sm:flex"
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
               >
-                <TrendingUp className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Statistiques</span>
+                <TrendingUp className="w-4 h-4 mr-2" />
+                <span>Statistiques</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="transition-all px-2 sm:px-3 hidden sm:flex"
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
               >
-                <LogOut className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Déconnexion</span>
+                <LogOut className="w-4 h-4 mr-2" />
+                <span>Déconnexion</span>
               </Button>
               
-              {/* Mobile Menu */}
+              {/* Tablet/Mobile Menu */}
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="sm:hidden px-2"
+                    className="lg:hidden px-3"
                   >
                     <Menu className="w-4 h-4" />
                   </Button>
