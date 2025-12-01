@@ -70,7 +70,7 @@ export default function PublicOrder() {
 
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    product.category === 'normal'
+    (product.category === 'normal' || product.category === 'both')
   ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
