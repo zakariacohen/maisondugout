@@ -301,7 +301,14 @@ const Index = () => {
             />
           ) : view === "pending" ? (
             <OrderList 
-              orders={orders.filter(o => !o.delivered)} 
+              orders={orders
+                .filter(o => !o.delivered)
+                .sort((a, b) => {
+                  if (!a.deliveryDate && !b.deliveryDate) return 0;
+                  if (!a.deliveryDate) return 1;
+                  if (!b.deliveryDate) return -1;
+                  return new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime();
+                })} 
               onDeleteOrder={handleDeleteOrder}
               onToggleDelivered={handleToggleDelivered}
               onEditOrder={handleEditOrder}
