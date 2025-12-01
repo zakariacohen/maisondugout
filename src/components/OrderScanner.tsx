@@ -108,7 +108,10 @@ export const OrderScanner = ({ onScanComplete, onScanningChange }: OrderScannerP
           <Button
             type="button"
             variant="outline"
-            onClick={() => cameraInputRef.current?.click()}
+            onClick={() => {
+              onScanningChange?.(true);
+              cameraInputRef.current?.click();
+            }}
             className="flex-1"
           >
             <Camera className="w-4 h-4 mr-2" />
@@ -117,7 +120,10 @@ export const OrderScanner = ({ onScanComplete, onScanningChange }: OrderScannerP
           <Button
             type="button"
             variant="outline"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => {
+              onScanningChange?.(true);
+              fileInputRef.current?.click();
+            }}
             className="flex-1"
           >
             <Upload className="w-4 h-4 mr-2" />
