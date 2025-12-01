@@ -344,48 +344,25 @@ export default function PublicOrderRamadan() {
           </div>
         </div>
 
-        {/* Countdown Timer - Compact Version */}
-        <div className="mb-6 relative">
-          <Card className="relative shadow-lg border-2 border-amber-400/50 bg-gradient-to-br from-red-900/90 via-amber-900/90 to-red-950/90 backdrop-blur-sm overflow-hidden">
-            {/* Decorative top border */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
-            
-            <CardContent className="py-4 px-3 sm:px-4">
-              <div className="text-center mb-3">
-                <h3 className="text-base sm:text-lg font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200 flex items-center justify-center gap-2">
-                  <Star className="w-4 h-4 text-amber-300" />
-                  العد التنازلي لرمضان
-                  <Star className="w-4 h-4 text-amber-300" />
-                </h3>
-                <p className="text-amber-100 text-xs sm:text-sm font-medium">
-                  Compte à Rebours jusqu'au Ramadan 2026
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto">
-                {[
-                  { value: timeLeft.days, label: 'Jours', labelAr: 'يوم' },
-                  { value: timeLeft.hours, label: 'Heures', labelAr: 'ساعة' },
-                  { value: timeLeft.minutes, label: 'Minutes', labelAr: 'دقيقة' },
-                  { value: timeLeft.seconds, label: 'Secondes', labelAr: 'ثانية' },
-                ].map((item, index) => (
-                  <div key={index} className="relative">
-                    <div className="bg-gradient-to-br from-amber-50 to-white p-2 sm:p-3 rounded-lg border-2 border-amber-400/70 shadow-md">
-                      <div className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-red-900 via-amber-700 to-red-900">
-                        {String(item.value).padStart(2, '0')}
-                      </div>
-                      <div className="text-xs font-bold text-amber-700">
-                        {item.labelAr}
-                      </div>
-                      <div className="text-xs font-semibold text-red-800 hidden sm:block">
-                        {item.label}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        {/* Countdown Timer - Minimal Version */}
+        <div className="mb-4">
+          <div className="text-center bg-red-900/60 border border-amber-400/30 rounded-lg py-1.5 px-2 max-w-md mx-auto">
+            <p className="text-amber-100 text-xs mb-1 hidden sm:block">Ramadan 2026</p>
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              {[
+                { value: timeLeft.days, label: 'j' },
+                { value: timeLeft.hours, label: 'h' },
+                { value: timeLeft.minutes, label: 'm' },
+                { value: timeLeft.seconds, label: 's' }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-0.5">
+                  <span className="text-amber-300 font-bold text-sm sm:text-base">{String(item.value).padStart(2, '0')}</span>
+                  <span className="text-amber-200/60 text-xs">{item.label}</span>
+                  {index < 3 && <span className="text-amber-400/40 text-xs">:</span>}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
