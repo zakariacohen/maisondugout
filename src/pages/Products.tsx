@@ -231,6 +231,7 @@ const Products = () => {
                   <SelectContent>
                     <SelectItem value="normal">Produit Normal</SelectItem>
                     <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
+                    <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
                     <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
                   </SelectContent>
                 </Select>
@@ -305,6 +306,11 @@ const Products = () => {
                         {product.category === "ramadan" && (
                           <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
                             🌙 Ramadan
+                          </Badge>
+                        )}
+                        {product.category === "traiteur" && (
+                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                            🍽️ Traiteur
                           </Badge>
                         )}
                         {product.category === "both" && (
@@ -398,6 +404,7 @@ const Products = () => {
                                 <SelectContent>
                                   <SelectItem value="normal">Produit Normal</SelectItem>
                                   <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
+                                  <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
                                   <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
                                 </SelectContent>
                               </Select>
