@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { OrderScanner } from "./OrderScanner";
 
 interface OrderFormProps {
   onAddOrder: (order: Order) => void;
@@ -94,6 +95,63 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     }
   };
 
+  const handleScanComplete = (scannedData: any) => {
+    console.log('Scanned data:', scannedData);
+    
+    // Update customer name if available
+    if (scannedData.customerName) {
+      setCustomerName(scannedData.customerName);
+    }
+    
+    // Update phone number if available
+    if (scannedData.phoneNumber) {
+      setPhoneNumber(scannedData.phoneNumber);
+    }
+    
+    // Update delivery date if available
+    if (scannedData.deliveryDate) {
+      try {
+        const date = new Date(scannedData.deliveryDate);
+        if (!isNaN(date.getTime())) {
+          setDeliveryDate(date);
+        }
+      } catch (error) {
+        console.error('Error parsing delivery date:', error);
+      }
+    }
+    
+    // Update items if available
+    if (scannedData.items && Array.isArray(scannedData.items) && scannedData.items.length > 0) {
+      const newItems = scannedData.items.map((scannedItem: any) => {
+        const product = products?.find(p => 
+          p.name.toLowerCase().includes(scannedItem.product.toLowerCase()) ||
+          scannedItem.product.toLowerCase().includes(p.name.toLowerCase())
+        );
+        
+        if (product) {
+          return {
+            product: product.name,
+            quantity: scannedItem.quantity || 1,
+            unitPrice: product.price,
+            total: (scannedItem.quantity || 1) * product.price,
+          };
+        }
+        
+        // If no matching product found, create item with scanned info
+        return {
+          product: scannedItem.product,
+          quantity: scannedItem.quantity || 1,
+          unitPrice: 0,
+          total: 0,
+        };
+      });
+      
+      setItems(newItems);
+    }
+    
+    toast.success("Informations extraites avec succès!");
+  };
+
   const calculateTotal = () => {
     return items.reduce((sum, item) => sum + item.total, 0);
   };
@@ -161,6 +219,17 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       </CardHeader>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Scanner Section */}
+          <div className="space-y-4 pb-6 border-b border-border">
+            <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm">
+                📷
+              </span>
+              Scanner une Commande
+            </h3>
+            <OrderScanner onScanComplete={handleScanComplete} />
+          </div>
+
           {/* Client Information */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
