@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -24,12 +24,14 @@ const queryClient = new QueryClient({
 });
 
 const SubdomainRedirect = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Redirect commande.maisondugout.ma to maisondugout.ma/acceuil
-    if (window.location.hostname === 'commande.maisondugout.ma') {
-      window.location.href = 'https://maisondugout.ma/acceuil';
+    // Show homepage directly on commande.maisondugout.ma
+    if (window.location.hostname === 'commande.maisondugout.ma' && window.location.pathname === '/') {
+      navigate('/acceuil', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
   return null;
 };
