@@ -143,11 +143,11 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
             isUrgent ? 'border-2 border-destructive bg-destructive/5' : ''
           }`}
         >
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1 flex-1">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+              <div className="space-y-1 flex-1 w-full sm:w-auto">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <CardTitle className="text-xl font-serif">{order.customerName}</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif break-words">{order.customerName}</CardTitle>
                   {order.orderSource === 'ramadan' && (
                     <Badge 
                       className="flex items-center gap-1 bg-gradient-to-r from-purple-600 to-violet-600 text-white border-0"
@@ -201,12 +201,12 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                   </CardDescription>
                 )}
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1 flex-wrap sm:flex-nowrap w-full sm:w-auto">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => handleShareWhatsApp(order)}
-                  className="hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20"
+                  className="hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20 flex-1 sm:flex-none"
                   title="Partager sur WhatsApp"
                 >
                   <MessageCircle className="w-4 h-4" />
@@ -215,7 +215,7 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                   variant="ghost"
                   size="icon"
                   onClick={() => onEditOrder(order)}
-                  className="hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                  className="hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 flex-1 sm:flex-none"
                   title="Modifier"
                 >
                   <Pencil className="w-4 h-4" />
@@ -299,7 +299,7 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="pt-3 sm:pt-4 p-4 sm:p-6">
             {(() => {
               const isExpanded = expandedOrders.has(order.id);
               const hasManyItems = order.items.length > 1;
@@ -314,19 +314,19 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
                     {visibleItems.map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
+                        className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 py-2 px-3 rounded-md bg-muted/50 hover:bg-muted/70 transition-colors"
                       >
                         <div className="flex-1">
-                          <span className="font-medium text-foreground">{item.product}</span>
-                          <span className="text-sm text-muted-foreground ml-2">
+                          <span className="font-medium text-foreground text-sm sm:text-base break-words">{item.product}</span>
+                          <span className="text-xs sm:text-sm text-muted-foreground ml-2">
                             x{item.quantity}
                           </span>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm text-muted-foreground">
+                        <div className="text-left sm:text-right">
+                          <div className="text-xs sm:text-sm text-muted-foreground">
                             {item.unitPrice.toFixed(2)} Dh × {item.quantity}
                           </div>
-                          <div className="font-semibold text-foreground">
+                          <div className="font-semibold text-foreground text-sm sm:text-base">
                             {item.total.toFixed(2)} Dh
                           </div>
                         </div>
