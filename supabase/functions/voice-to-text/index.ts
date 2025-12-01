@@ -127,7 +127,29 @@ serve(async (req) => {
     }
 
     const aiResult = await aiResponse.json();
-    const transcription = aiResult.choices?.[0]?.message?.content || '';
+    console.log('AI raw result:', aiResult);
+
+    const messageContent = aiResult.choices?.[0]?.message?.content;
+    let transcription = '';
+
+    if (typeof messageContent === 'string') {
+      transcription = messageContent;
+    } else if (Array.isArray(messageContent)) {
+      const textPart = messageContent.find((part: any) =>
+        (part.type === 'output_text' || part.type === 'text') && typeof part.text === 'string'
+      );
+      if (textPart) {
+        transcription = textPart.text;
+      } else {
+        transcription = JSON.stringify(messageContent);
+      }
+    } else if (messageContent && typeof messageContent === 'object') {
+      if (typeof (messageContent as any).text === 'string') {
+        transcription = (messageContent as any).text;
+      } else {
+        transcription = JSON.stringify(messageContent);
+      }
+    }
     
     console.log('Transcription result:', transcription);
 
