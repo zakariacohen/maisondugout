@@ -426,25 +426,25 @@ export default function PublicOrderRamadan() {
                           onClick={() => addToCart(product.id, product.name, product.price)}
                           className={`relative flex flex-col items-center gap-3 p-4 rounded-2xl border-3 transition-all hover:scale-105 active:scale-95 shadow-lg ${
                             isInCart 
-                              ? 'border-amber-500 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 shadow-amber-500/50 shadow-xl' 
-                              : 'border-amber-300/50 hover:border-amber-500 hover:shadow-xl bg-white'
+                              ? 'border-emerald-500 bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 shadow-emerald-500/50 shadow-xl' 
+                              : 'border-purple-300/50 hover:border-purple-500 hover:shadow-xl bg-gradient-to-br from-purple-50 to-pink-50'
                           }`}
                         >
                           {isInCart && (
-                            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-red-600 via-red-500 to-amber-600 text-white text-sm font-bold flex items-center justify-center shadow-xl border-2 border-white animate-pulse">
+                            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 via-green-600 to-emerald-700 text-white text-sm font-bold flex items-center justify-center shadow-xl border-2 border-white animate-pulse">
                               {cartQuantity}
                             </div>
                           )}
                           <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl border-2 ${
                             isInCart 
-                              ? 'bg-gradient-to-br from-red-600 to-amber-600 border-white' 
-                              : 'bg-gradient-to-br from-amber-100 to-yellow-100 border-amber-300'
+                              ? 'bg-gradient-to-br from-emerald-600 to-green-600 border-white' 
+                              : 'bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300'
                           }`}>
-                            <IconComponent className={`w-9 h-9 ${isInCart ? 'text-white' : 'text-red-800'}`} />
+                            <IconComponent className={`w-9 h-9 ${isInCart ? 'text-white' : 'text-purple-800'}`} />
                           </div>
                           <div className="text-center w-full">
-                            <p className="font-bold text-sm line-clamp-2 text-red-900">{product.name}</p>
-                            <p className="text-base font-bold mt-1 text-amber-700">{product.price.toFixed(2)} DH</p>
+                            <p className="font-bold text-sm line-clamp-2 text-purple-900">{product.name}</p>
+                            <p className="text-base font-bold mt-1 text-emerald-700">{product.price.toFixed(2)} DH</p>
                           </div>
                         </button>
                       );
