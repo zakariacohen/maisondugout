@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Minus, CalendarIcon, ShoppingBag, Check, Package, icons, LucideIcon } from "lucide-react";
+import { Plus, Minus, CalendarIcon, ShoppingBag, Check, Package, icons, LucideIcon, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useProducts } from "@/hooks/useProducts";
 import { format } from "date-fns";
@@ -35,6 +35,7 @@ export default function PublicOrder() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const addToCart = (productId: string, productName: string, price: number) => {
     const existing = items.find(item => item.productId === productId);
@@ -64,6 +65,10 @@ export default function PublicOrder() {
   };
 
   const calculateTotal = () => items.reduce((sum, item) => sum + item.total, 0);
+
+  const filteredProducts = products?.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,13 +184,23 @@ export default function PublicOrder() {
                   Choisissez vos Produits
                 </CardTitle>
                 <CardDescription>Sélectionnez les produits que vous souhaitez commander</CardDescription>
+                <div className="relative mt-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Rechercher un produit..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </CardHeader>
               <CardContent className="max-h-[500px] overflow-y-auto">
                 {isLoading ? (
                   <div className="text-center py-8 text-muted-foreground">Chargement des produits...</div>
-                ) : products && products.length > 0 ? (
+                ) : filteredProducts.length > 0 ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {products.map((product) => {
+                    {filteredProducts.map((product) => {
                       const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
                       const isInCart = items.some(item => item.productId === product.id);
                       const cartQuantity = items.find(item => item.productId === product.id)?.quantity || 0;
@@ -220,6 +235,18 @@ export default function PublicOrder() {
                         </button>
                       );
                     })}
+                  </div>
+                ) : searchQuery ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-2">Aucun produit trouvé pour "{searchQuery}"</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      Réinitialiser la recherche
+                    </Button>
                   </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-8">Aucun produit disponible</p>
