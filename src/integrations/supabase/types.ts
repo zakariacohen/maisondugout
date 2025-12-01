@@ -94,6 +94,8 @@ export type Database = {
           id: string
           name: string
           price: number
+          stock: number
+          stock_alert_threshold: number
           updated_at: string
         }
         Insert: {
@@ -101,6 +103,8 @@ export type Database = {
           id?: string
           name: string
           price: number
+          stock?: number
+          stock_alert_threshold?: number
           updated_at?: string
         }
         Update: {
@@ -108,6 +112,8 @@ export type Database = {
           id?: string
           name?: string
           price?: number
+          stock?: number
+          stock_alert_threshold?: number
           updated_at?: string
         }
         Relationships: []

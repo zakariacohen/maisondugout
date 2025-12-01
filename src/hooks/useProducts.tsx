@@ -5,6 +5,8 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  stock: number;
+  stock_alert_threshold: number;
 }
 
 export const useProducts = () => {

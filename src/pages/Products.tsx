@@ -4,10 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Pencil, Trash2, Package, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,8 +35,22 @@ const Products = () => {
   const { data: products, isLoading } = useProducts();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<{id: string, name: string, price: number} | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: "", price: "" });
+  const [editingProduct, setEditingProduct] = useState<{
+    id: string;
+    name: string;
+    price: number;
+    stock: number;
+    stock_alert_threshold: number;
+  } | null>(null);
+  const [newProduct, setNewProduct] = useState({ 
+    name: "", 
+    price: "", 
+    stock: "0", 
+    stock_alert_threshold: "10" 
+  });
+
+  // Get low stock products
+  const lowStockProducts = products?.filter(p => p.stock <= p.stock_alert_threshold) || [];
 
   const handleAddProduct = async () => {
     if (!newProduct.name.trim() || !newProduct.price) {
@@ -45,7 +61,12 @@ const Products = () => {
     const { error } = await supabase
       .from("products")
       .insert([
-        { name: newProduct.name.trim(), price: parseFloat(newProduct.price) }
+        { 
+          name: newProduct.name.trim(), 
+          price: parseFloat(newProduct.price),
+          stock: parseInt(newProduct.stock) || 0,
+          stock_alert_threshold: parseInt(newProduct.stock_alert_threshold) || 10
+        }
       ]);
 
     if (error) {
@@ -54,7 +75,7 @@ const Products = () => {
     }
 
     toast.success("Produit ajouté avec succès");
-    setNewProduct({ name: "", price: "" });
+    setNewProduct({ name: "", price: "", stock: "0", stock_alert_threshold: "10" });
     setIsAddDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ["products"] });
   };
@@ -67,7 +88,12 @@ const Products = () => {
 
     const { error } = await supabase
       .from("products")
-      .update({ name: editingProduct.name.trim(), price: editingProduct.price })
+      .update({ 
+        name: editingProduct.name.trim(), 
+        price: editingProduct.price,
+        stock: editingProduct.stock,
+        stock_alert_threshold: editingProduct.stock_alert_threshold
+      })
       .eq("id", editingProduct.id);
 
     if (error) {
@@ -105,13 +131,34 @@ const Products = () => {
 
   return (
     <div className="space-y-6">
+      {/* Low Stock Alerts */}
+      {lowStockProducts.length > 0 && (
+        <Alert variant="destructive" className="border-2">
+          <AlertTriangle className="h-5 w-5" />
+          <AlertTitle className="font-bold">Alerte Stock Bas!</AlertTitle>
+          <AlertDescription>
+            <p className="mb-2">
+              {lowStockProducts.length} produit(s) nécessitent un réapprovisionnement:
+            </p>
+            <ul className="list-disc list-inside space-y-1">
+              {lowStockProducts.map(product => (
+                <li key={product.id} className="font-medium">
+                  {product.name}: <span className="font-bold">{product.stock}</span> unité(s) 
+                  (seuil: {product.stock_alert_threshold})
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-serif font-bold text-foreground">
             Gestion des Produits
           </h2>
           <p className="text-sm text-muted-foreground">
-            Gérez votre catalogue de pâtisseries
+            Gérez votre catalogue et vos stocks de pâtisseries
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -149,6 +196,29 @@ const Products = () => {
                   placeholder="Ex: 5.50"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="stock">Stock Initial</Label>
+                <Input
+                  id="stock"
+                  type="number"
+                  value={newProduct.stock}
+                  onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                  placeholder="Ex: 50"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="threshold">Seuil d'Alerte Stock</Label>
+                <Input
+                  id="threshold"
+                  type="number"
+                  value={newProduct.stock_alert_threshold}
+                  onChange={(e) => setNewProduct({ ...newProduct, stock_alert_threshold: e.target.value })}
+                  placeholder="Ex: 10"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Vous serez alerté quand le stock atteint ce niveau
+                </p>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -172,99 +242,152 @@ const Products = () => {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <Card key={product.id} className="shadow-md border-border/50">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{product.name}</CardTitle>
-                    <CardDescription className="text-lg font-semibold text-primary mt-2">
-                      {product.price.toFixed(2)} Dh
-                    </CardDescription>
-                  </div>
-                  <div className="flex gap-1">
-                    <Dialog open={editingProduct?.id === product.id} onOpenChange={(open) => {
-                      if (!open) setEditingProduct(null);
-                    }}>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setEditingProduct(product)}
-                          className="hover:bg-primary/10"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Modifier le produit</DialogTitle>
-                          <DialogDescription>
-                            Modifiez les détails du produit
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="edit-name">Nom du produit</Label>
-                            <Input
-                              id="edit-name"
-                              value={editingProduct?.name || ""}
-                              onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, name: e.target.value} : null)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="edit-price">Prix (Dh)</Label>
-                            <Input
-                              id="edit-price"
-                              type="number"
-                              step="0.01"
-                              value={editingProduct?.price || 0}
-                              onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, price: parseFloat(e.target.value)} : null)}
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setEditingProduct(null)}>
-                            Annuler
-                          </Button>
-                          <Button onClick={handleUpdateProduct}>Modifier</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer le produit?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer "{product.name}"? 
-                            Cette action est irréversible.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteProduct(product.id, product.name)}
-                            className="bg-destructive hover:bg-destructive/90"
+          {products.map((product) => {
+            const isLowStock = product.stock <= product.stock_alert_threshold;
+            const isOutOfStock = product.stock === 0;
+            
+            return (
+              <Card 
+                key={product.id} 
+                className={`shadow-md border-border/50 ${
+                  isOutOfStock ? 'border-2 border-destructive' : 
+                  isLowStock ? 'border-2 border-yellow-500' : ''
+                }`}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <CardTitle className="text-lg">{product.name}</CardTitle>
+                        {isOutOfStock && (
+                          <Badge variant="destructive" className="text-xs">
+                            Rupture
+                          </Badge>
+                        )}
+                        {isLowStock && !isOutOfStock && (
+                          <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-600">
+                            Stock Bas
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="text-lg font-semibold text-primary">
+                        {product.price.toFixed(2)} Dh
+                      </CardDescription>
+                      <div className="mt-3 space-y-1">
+                        <p className={`text-sm font-medium ${
+                          isOutOfStock ? 'text-destructive' : 
+                          isLowStock ? 'text-yellow-600' : 
+                          'text-foreground'
+                        }`}>
+                          Stock: <span className="font-bold">{product.stock}</span> unités
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Seuil d'alerte: {product.stock_alert_threshold}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Dialog open={editingProduct?.id === product.id} onOpenChange={(open) => {
+                        if (!open) setEditingProduct(null);
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditingProduct(product)}
+                            className="hover:bg-primary/10"
                           >
-                            Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Modifier le produit</DialogTitle>
+                            <DialogDescription>
+                              Modifiez les détails du produit et son stock
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-name">Nom du produit</Label>
+                              <Input
+                                id="edit-name"
+                                value={editingProduct?.name || ""}
+                                onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, name: e.target.value} : null)}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-price">Prix (Dh)</Label>
+                              <Input
+                                id="edit-price"
+                                type="number"
+                                step="0.01"
+                                value={editingProduct?.price || 0}
+                                onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, price: parseFloat(e.target.value)} : null)}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-stock">Stock</Label>
+                              <Input
+                                id="edit-stock"
+                                type="number"
+                                value={editingProduct?.stock || 0}
+                                onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, stock: parseInt(e.target.value)} : null)}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-threshold">Seuil d'Alerte Stock</Label>
+                              <Input
+                                id="edit-threshold"
+                                type="number"
+                                value={editingProduct?.stock_alert_threshold || 10}
+                                onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, stock_alert_threshold: parseInt(e.target.value)} : null)}
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setEditingProduct(null)}>
+                              Annuler
+                            </Button>
+                            <Button onClick={handleUpdateProduct}>Modifier</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Supprimer le produit?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Êtes-vous sûr de vouloir supprimer "{product.name}"? 
+                              Cette action est irréversible.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteProduct(product.id, product.name)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
+                </CardHeader>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
