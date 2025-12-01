@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { OrderScanner } from "./OrderScanner";
+import { VoiceRecorder } from "./VoiceRecorder";
 
 interface OrderFormProps {
   onAddOrder: (order: Order) => void;
@@ -153,6 +154,71 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     toast.success("Informations extraites avec succès!");
   };
 
+  const handleVoiceTranscription = (text: string) => {
+    console.log('Voice transcription:', text);
+    
+    // Parse the transcription text to extract order information
+    const lowerText = text.toLowerCase();
+    
+    // Try to extract customer name (usually at the beginning)
+    const nameMatch = text.match(/(?:nom|client|pour)\s*:?\s*([A-ZÀ-ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-ÿ][a-zà-ÿ]+)*)/i);
+    if (nameMatch && nameMatch[1]) {
+      setCustomerName(nameMatch[1]);
+    }
+    
+    // Try to extract phone number
+    const phoneMatch = text.match(/(?:téléphone|numéro|tel|phone)\s*:?\s*((?:\+?212\s?)?0?\d[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2})/i);
+    if (phoneMatch && phoneMatch[1]) {
+      setPhoneNumber(phoneMatch[1].replace(/[\s.-]/g, ''));
+    }
+    
+    // Try to extract products mentioned
+    const productNames = products?.map(p => p.name.toLowerCase()) || [];
+    const mentionedProducts: OrderItem[] = [];
+    
+    productNames.forEach((productName) => {
+      if (lowerText.includes(productName)) {
+        const product = products?.find(p => p.name.toLowerCase() === productName);
+        if (product) {
+          // Try to find quantity near the product name
+          const productIndex = lowerText.indexOf(productName);
+          const beforeProduct = lowerText.substring(Math.max(0, productIndex - 20), productIndex);
+          const quantityMatch = beforeProduct.match(/(\d+)/);
+          
+          mentionedProducts.push({
+            product: product.name,
+            quantity: quantityMatch ? parseInt(quantityMatch[1]) : 1,
+            unitPrice: product.price,
+            total: (quantityMatch ? parseInt(quantityMatch[1]) : 1) * product.price,
+          });
+        }
+      }
+    });
+    
+    if (mentionedProducts.length > 0) {
+      setItems(mentionedProducts);
+    }
+    
+    // Try to extract delivery date
+    const dateMatch = text.match(/(?:livraison|pour le|date)\s*:?\s*(\d{1,2}[\s\/.-]\d{1,2}[\s\/.-]\d{2,4})/i);
+    if (dateMatch && dateMatch[1]) {
+      try {
+        const dateParts = dateMatch[1].split(/[\s\/.-]/);
+        const day = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]) - 1;
+        const year = dateParts[2].length === 2 ? 2000 + parseInt(dateParts[2]) : parseInt(dateParts[2]);
+        const date = new Date(year, month, day);
+        if (!isNaN(date.getTime())) {
+          setDeliveryDate(date);
+        }
+      } catch (error) {
+        console.error('Error parsing delivery date from voice:', error);
+      }
+    }
+    
+    toast.success("Commande vocale traitée !");
+  };
+
   const calculateTotal = () => {
     return items.reduce((sum, item) => sum + item.total, 0);
   };
@@ -220,18 +286,21 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       </CardHeader>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Scanner Section */}
+          {/* Scanner and Voice Section */}
           <div className="space-y-4 pb-6 border-b border-border">
             <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm">
                 📷
               </span>
-              Scanner une Commande
+              Scanner ou Dicter une Commande
             </h3>
-            <OrderScanner 
-              onScanComplete={handleScanComplete}
-              onScanningChange={onScanningChange}
-            />
+            <div className="space-y-3">
+              <OrderScanner 
+                onScanComplete={handleScanComplete}
+                onScanningChange={onScanningChange}
+              />
+              <VoiceRecorder onTranscriptionComplete={handleVoiceTranscription} />
+            </div>
           </div>
 
           {/* Client Information */}
