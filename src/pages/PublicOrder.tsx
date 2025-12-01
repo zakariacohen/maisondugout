@@ -180,33 +180,47 @@ export default function PublicOrder() {
                 </CardTitle>
                 <CardDescription>Sélectionnez les produits que vous souhaitez commander</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 max-h-[500px] overflow-y-auto">
+              <CardContent className="max-h-[500px] overflow-y-auto">
                 {isLoading ? (
                   <div className="text-center py-8 text-muted-foreground">Chargement des produits...</div>
                 ) : products && products.length > 0 ? (
-                  products.map((product) => {
-                    const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
-                    return (
-                      <div key={product.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors hover:shadow-md">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0">
-                          <IconComponent className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-sm text-primary font-semibold">{product.price.toFixed(2)} DH</p>
-                        </div>
-                        <Button
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {products.map((product) => {
+                      const IconComponent = (icons[product.icon as keyof typeof icons] || Package) as LucideIcon;
+                      const isInCart = items.some(item => item.productId === product.id);
+                      const cartQuantity = items.find(item => item.productId === product.id)?.quantity || 0;
+                      
+                      return (
+                        <button
+                          key={product.id}
                           type="button"
-                          size="sm"
                           onClick={() => addToCart(product.id, product.name, product.price)}
-                          className="hover:scale-105 transition-transform"
+                          className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all hover:scale-105 active:scale-95 ${
+                            isInCart 
+                              ? 'border-primary bg-primary/5 shadow-lg' 
+                              : 'border-border hover:border-primary/50 hover:shadow-md'
+                          }`}
                         >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Ajouter
-                        </Button>
-                      </div>
-                    );
-                  })
+                          {isInCart && (
+                            <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-md">
+                              {cartQuantity}
+                            </div>
+                          )}
+                          <div className={`w-14 h-14 rounded-full flex items-center justify-center ${
+                            isInCart 
+                              ? 'bg-gradient-to-br from-primary to-accent' 
+                              : 'bg-gradient-to-br from-primary/20 to-accent/20'
+                          }`}>
+                            <IconComponent className={`w-8 h-8 ${isInCart ? 'text-white' : 'text-primary'}`} />
+                          </div>
+                          <div className="text-center w-full">
+                            <p className="font-medium text-sm line-clamp-2">{product.name}</p>
+                            <p className="text-sm text-primary font-bold mt-1">{product.price.toFixed(2)} DH</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-8">Aucun produit disponible</p>
                 )}
