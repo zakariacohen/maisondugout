@@ -133,21 +133,26 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
           scannedItem.product.toLowerCase().includes(p.name.toLowerCase())
         );
         
+        // Use scanned quantity/price if available, otherwise use defaults
+        const quantity = scannedItem.quantity || (product ? 1 : 0);
+        const unitPrice = scannedItem.unitPrice || (product?.price || 0);
+        const total = scannedItem.total || (quantity * unitPrice);
+        
         if (product) {
           return {
             product: product.name,
-            quantity: 0,
-            unitPrice: 0,
-            total: 0,
+            quantity,
+            unitPrice,
+            total,
           };
         }
         
         // If no matching product found, create item with scanned info
         return {
           product: scannedItem.product,
-          quantity: 0,
-          unitPrice: 0,
-          total: 0,
+          quantity,
+          unitPrice,
+          total,
         };
       });
       
