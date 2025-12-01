@@ -24,9 +24,6 @@ export default function HomePage() {
               <img src={logo} alt="Maison du Goût" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full shadow-2xl object-cover border-2 sm:border-4 border-amber-400/50 relative" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-amber-100 drop-shadow-lg">
-                ميزون دو غو
-              </h1>
               <h2 className="text-lg sm:text-xl md:text-2xl font-serif font-bold text-amber-50 mb-0.5 sm:mb-1">Maison du Goût</h2>
               <p className="text-xs sm:text-sm text-amber-200/90 font-medium tracking-wide">✨ فن الحلويات المغربية الأصيلة ✨</p>
             </div>
