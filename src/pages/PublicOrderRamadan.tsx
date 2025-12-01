@@ -70,7 +70,7 @@ export default function PublicOrderRamadan() {
 
   const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    product.category === 'ramadan'
+    (product.category === 'ramadan' || product.category === 'both')
   ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
