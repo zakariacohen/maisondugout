@@ -8,20 +8,21 @@ export default function Home() {
   const navigate = useNavigate();
   const hostname = window.location.hostname;
   
-  // Detect subdomain and show appropriate page
-  const isRamadanDomain = hostname.includes('ramadan');
-  const isAppDomain = hostname.includes('app.');
-  
-  // app.maisondugout.ma → Admin interface
-  if (isAppDomain) {
-    return <Index />;
-  }
+  // Detect subdomain - use startsWith for exact match
+  const isRamadanDomain = hostname.startsWith('ramadan.');
+  const isAppDomain = hostname.startsWith('app.');
+  const isCommandeDomain = hostname.startsWith('commande.');
   
   // ramadan.maisondugout.ma → Ramadan form
   if (isRamadanDomain) {
     return <PublicOrderRamadan />;
   }
   
-  // commande.maisondugout.ma → Classic form
+  // app.maisondugout.ma → Admin interface
+  if (isAppDomain) {
+    return <Index />;
+  }
+  
+  // commande.maisondugout.ma or default → Classic form
   return <PublicOrder />;
 }
