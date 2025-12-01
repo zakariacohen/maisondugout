@@ -148,6 +148,13 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
               <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <CardTitle className="text-xl font-serif">{order.customerName}</CardTitle>
+                  {order.orderSource === 'ramadan' && (
+                    <Badge 
+                      className="flex items-center gap-1 bg-gradient-to-r from-purple-600 to-violet-600 text-white border-0"
+                    >
+                      🌙 Ramadan
+                    </Badge>
+                  )}
                   {isUrgent && (
                     <Badge 
                       variant="destructive"

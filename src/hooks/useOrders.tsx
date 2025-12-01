@@ -30,6 +30,7 @@ export const useOrders = () => {
         delivered: order.delivered,
         deliveryImageUrl: order.delivery_image_url,
         deliveryDate: order.delivery_date ? new Date(order.delivery_date) : undefined,
+        orderSource: order.order_source,
         date: new Date(order.created_at),
         items: itemsData
           .filter((item) => item.order_id === order.id)

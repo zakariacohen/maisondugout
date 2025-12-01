@@ -102,6 +102,7 @@ export default function PublicOrderRamadan() {
           total: calculateTotal(),
           delivered: false,
           delivery_date: deliveryDate?.toISOString() || null,
+          order_source: 'ramadan',
         })
         .select()
         .single();
