@@ -12,6 +12,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -43,13 +50,15 @@ const Products = () => {
     stock: number;
     stock_alert_threshold: number;
     icon: string;
+    category: string;
   } | null>(null);
   const [newProduct, setNewProduct] = useState({ 
     name: "", 
     price: "", 
     stock: "0", 
     stock_alert_threshold: "10",
-    icon: "Package"
+    icon: "Package",
+    category: "normal"
   });
 
   // Get low stock products
@@ -69,7 +78,8 @@ const Products = () => {
           price: parseFloat(newProduct.price),
           stock: parseInt(newProduct.stock) || 0,
           stock_alert_threshold: parseInt(newProduct.stock_alert_threshold) || 10,
-          icon: newProduct.icon || "Package"
+          icon: newProduct.icon || "Package",
+          category: newProduct.category
         }
       ]);
 
@@ -79,7 +89,7 @@ const Products = () => {
     }
 
     toast.success("Produit ajouté avec succès");
-    setNewProduct({ name: "", price: "", stock: "0", stock_alert_threshold: "10", icon: "Package" });
+    setNewProduct({ name: "", price: "", stock: "0", stock_alert_threshold: "10", icon: "Package", category: "normal" });
     setIsAddDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ["products"] });
   };
@@ -97,7 +107,8 @@ const Products = () => {
         price: editingProduct.price,
         stock: editingProduct.stock,
         stock_alert_threshold: editingProduct.stock_alert_threshold,
-        icon: editingProduct.icon || "Package"
+        icon: editingProduct.icon || "Package",
+        category: editingProduct.category
       })
       .eq("id", editingProduct.id);
 
@@ -209,6 +220,21 @@ const Products = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="category">Catégorie</Label>
+                <Select
+                  value={newProduct.category}
+                  onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner une catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="normal">Produit Normal</SelectItem>
+                    <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="stock">Stock Initial</Label>
                 <Input
                   id="stock"
@@ -275,6 +301,11 @@ const Products = () => {
                           return <IconComponent className="w-5 h-5 text-primary" />;
                         })()}
                         <CardTitle className="text-lg">{product.name}</CardTitle>
+                        {product.category === "ramadan" && (
+                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
+                            🌙 Ramadan
+                          </Badge>
+                        )}
                         {isOutOfStock && (
                           <Badge variant="destructive" className="text-xs">
                             Rupture
@@ -348,6 +379,21 @@ const Products = () => {
                                 value={editingProduct?.price || 0}
                                 onChange={(e) => setEditingProduct(editingProduct ? {...editingProduct, price: parseFloat(e.target.value)} : null)}
                               />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-category">Catégorie</Label>
+                              <Select
+                                value={editingProduct?.category || "normal"}
+                                onValueChange={(value) => setEditingProduct(editingProduct ? {...editingProduct, category: value} : null)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="normal">Produit Normal</SelectItem>
+                                  <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="edit-stock">Stock</Label>

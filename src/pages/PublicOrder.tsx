@@ -69,7 +69,8 @@ export default function PublicOrder() {
   const calculateTotal = () => items.reduce((sum, item) => sum + item.total, 0);
 
   const filteredProducts = products?.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    product.category === 'normal'
   ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
