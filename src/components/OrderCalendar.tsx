@@ -3,7 +3,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { format, isSameDay } from "date-fns";
+import { format, isSameDay, isSameMonth, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Order } from "@/pages/Index";
 import { Eye } from "lucide-react";
@@ -44,6 +44,29 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
     order.deliveryDate ? new Date(order.deliveryDate) : new Date(order.date)
   );
 
+  // Calculate monthly total for selected date's month
+  const getMonthlyTotal = (date: Date) => {
+    return orders
+      .filter((order) => {
+        const orderDate = order.deliveryDate 
+          ? new Date(order.deliveryDate) 
+          : new Date(order.date);
+        return isSameMonth(orderDate, date);
+      })
+      .reduce((sum, order) => sum + order.total, 0);
+  };
+
+  // Calculate monthly stats
+  const monthlyTotal = selectedDate ? getMonthlyTotal(selectedDate) : 0;
+  const monthlyOrders = selectedDate ? orders.filter((order) => {
+    const orderDate = order.deliveryDate 
+      ? new Date(order.deliveryDate) 
+      : new Date(order.date);
+    return isSameMonth(orderDate, selectedDate);
+  }) : [];
+  const monthlyDelivered = monthlyOrders.filter(o => o.delivered).length;
+  const monthlyPending = monthlyOrders.filter(o => !o.delivered).length;
+
   // Calculate stats for selected date
   const selectedDateOrders = selectedDate ? getOrdersForDate(selectedDate) : [];
   const pendingOrders = selectedDateOrders.filter((o) => !o.delivered);
@@ -60,6 +83,39 @@ export const OrderCalendar = ({ orders, isLoading }: OrderCalendarProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Monthly Summary */}
+      {selectedDate && (
+        <Card className="bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5">
+          <CardHeader>
+            <CardTitle className="text-lg font-serif">
+              Résumé - {format(selectedDate, "MMMM yyyy", { locale: fr })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-card/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Total du mois</p>
+                <p className="text-2xl md:text-3xl font-bold text-primary">
+                  {monthlyTotal.toFixed(2)} DH
+                </p>
+              </div>
+              <div className="text-center p-4 bg-card/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Commandes livrées</p>
+                <p className="text-2xl md:text-3xl font-bold text-green-600">
+                  {monthlyDelivered}
+                </p>
+              </div>
+              <div className="text-center p-4 bg-card/50 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">En attente</p>
+                <p className="text-2xl md:text-3xl font-bold text-destructive">
+                  {monthlyPending}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-serif">Calendrier des Commandes</CardTitle>
