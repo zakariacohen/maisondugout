@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
+import Dashboard from "@/pages/Dashboard";
 import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -33,7 +34,7 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts">("form");
+  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts" | "dashboard">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { orders, isLoading, addOrder, updateOrder, deleteOrder, uploadDeliveryImage } = useOrders();
@@ -266,6 +267,15 @@ const Index = () => {
                 <span className="hidden md:inline">Calendrier</span>
               </Button>
               <Button
+                variant={view === "dashboard" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setView("dashboard")}
+                className="transition-all px-2 sm:px-3 hidden sm:flex"
+              >
+                <BarChart3 className="w-4 h-4 sm:mr-2" />
+                <span className="hidden md:inline">Dashboard</span>
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
@@ -311,6 +321,18 @@ const Index = () => {
                     >
                       <CalendarDays className="w-5 h-5 mr-3" />
                       Calendrier
+                    </Button>
+                    <Button
+                      variant={view === "dashboard" ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => {
+                        setView("dashboard");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <BarChart3 className="w-5 h-5 mr-3" />
+                      Dashboard
                     </Button>
                     <Button
                       variant="outline"
@@ -385,6 +407,11 @@ const Index = () => {
             />
           ) : view === "calendar" ? (
             <OrderCalendar 
+              orders={orders}
+              isLoading={isLoading}
+            />
+          ) : view === "dashboard" ? (
+            <Dashboard 
               orders={orders}
               isLoading={isLoading}
             />
