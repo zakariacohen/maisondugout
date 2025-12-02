@@ -13,6 +13,7 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { SEO } from "@/components/SEO";
 
 interface OrderItem {
   productId: string;
@@ -236,13 +237,56 @@ export default function PublicOrderRamadan() {
     );
   }
 
+  const ramadanStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Maison du Goût - Spécial Ramadan",
+    "description": "Pâtisserie artisanale marocaine - Commandes spéciales Ramadan 2026. Chebakia, sellou, briouates et pâtisseries traditionnelles.",
+    "url": "https://commande.maisondugout.ma/ramadan",
+    "telephone": "+212600000000",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "MA",
+      "addressRegion": "Maroc"
+    },
+    "priceRange": "$$",
+    "servesCuisine": "Pâtisserie Marocaine Ramadan",
+    "event": {
+      "@type": "Event",
+      "name": "Commandes Ramadan 2026",
+      "startDate": "2026-02-18",
+      "description": "Commandez vos pâtisseries traditionnelles pour le Ramadan 1447"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Pâtisseries Ramadan",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Chebakia, Sellou, Briouates"
+          }
+        }
+      ]
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-900 via-amber-900 to-red-950 py-12 px-4 relative overflow-hidden">
-      {/* Moroccan zellige pattern background */}
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.3) 35px, rgba(255,215,0,0.3) 70px),
-                         repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(139,69,19,0.2) 35px, rgba(139,69,19,0.2) 70px)`,
-      }}></div>
+    <>
+      <SEO
+        title="Commandes Ramadan 2026 | Maison du Goût - Pâtisseries Traditionnelles Maroc"
+        description="Commandez vos pâtisseries marocaines pour Ramadan 2026. Chebakia, sellou, briouates et délices traditionnels faits maison. رمضان مبارك"
+        keywords="ramadan 2026, pâtisserie ramadan maroc, chebakia, sellou, briouates, حلويات رمضان, pâtisserie marocaine ramadan"
+        canonicalUrl="/ramadan"
+        structuredData={ramadanStructuredData}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-amber-900 to-red-950 py-12 px-4 relative overflow-hidden">
+        {/* Moroccan zellige pattern background */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.3) 35px, rgba(255,215,0,0.3) 70px),
+                           repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(139,69,19,0.2) 35px, rgba(139,69,19,0.2) 70px)`,
+        }}></div>
       
       {/* Decorative glow elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
@@ -682,5 +726,6 @@ export default function PublicOrderRamadan() {
         </form>
       </div>
     </div>
+    </>
   );
 }
