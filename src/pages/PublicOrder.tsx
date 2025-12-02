@@ -13,6 +13,7 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { SEO } from "@/components/SEO";
 
 interface OrderItem {
   productId: string;
@@ -163,11 +164,48 @@ export default function PublicOrder() {
     );
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Maison du Goût",
+    "description": "Pâtisserie artisanale marocaine - Commandez en ligne vos gâteaux et pâtisseries traditionnelles",
+    "url": "https://commande.maisondugout.ma/commande",
+    "telephone": "+212600000000",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "MA",
+      "addressRegion": "Maroc"
+    },
+    "priceRange": "$$",
+    "servesCuisine": "Pâtisserie Marocaine",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Pâtisseries et Gâteaux",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Pâtisseries Marocaines"
+          }
+        }
+      ]
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-background py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
+    <>
+      <SEO
+        title="Commander en Ligne | Maison du Goût - Pâtisserie Artisanale Maroc"
+        description="Commandez vos pâtisseries marocaines artisanales en ligne. Gâteaux traditionnels, msemen, briouates et plus. Livraison rapide au Maroc."
+        keywords="pâtisserie marocaine, commander gâteaux maroc, pâtisserie artisanale, gâteaux traditionnels, livraison pâtisserie"
+        canonicalUrl="/commande"
+        structuredData={structuredData}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-background py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <ShoppingBag className="w-10 h-10 text-primary" />
             <h1 className="text-4xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -402,7 +440,8 @@ export default function PublicOrder() {
             </div>
           </div>
         </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
