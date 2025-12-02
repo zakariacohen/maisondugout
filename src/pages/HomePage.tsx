@@ -167,7 +167,6 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgMEwyNSAxNUgxNUwyMCAwWk0yMCA0MEwxNSAyNUgyNUwyMCA0MFpNMCAyMEwxNSAyNVYxNUwwIDIwWk00MCAyMEwyNSAxNVYyNUw0MCAyMFoiIGZpbGw9IiNmZmQ3MDAiIG9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-20"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="mb-4">
-            <p className="text-xl font-serif font-bold text-amber-100 mb-2">ميزون دو غو</p>
             <p className="text-lg font-serif text-amber-200">Maison du Goût</p>
           </div>
           <p className="text-sm text-amber-300/90 font-medium">
