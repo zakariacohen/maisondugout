@@ -25,19 +25,75 @@ interface OrderFormProps {
   onScanningChange?: (isScanning: boolean) => void;
 }
 
+const FORM_STORAGE_KEY = 'orderFormDraft';
+
+interface FormDraft {
+  customerName: string;
+  phoneNumber: string;
+  deliveryAddress: string;
+  deliveryDate: string | null;
+  items: OrderItem[];
+}
+
+const saveFormDraft = (draft: FormDraft) => {
+  try {
+    localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draft));
+  } catch (e) {
+    console.error('Error saving form draft:', e);
+  }
+};
+
+const loadFormDraft = (): FormDraft | null => {
+  try {
+    const saved = localStorage.getItem(FORM_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch (e) {
+    console.error('Error loading form draft:', e);
+    return null;
+  }
+};
+
+const clearFormDraft = () => {
+  try {
+    localStorage.removeItem(FORM_STORAGE_KEY);
+  } catch (e) {
+    console.error('Error clearing form draft:', e);
+  }
+};
+
 export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdit, onScanningChange }: OrderFormProps) => {
   const { data: products, isLoading } = useProducts();
-  const [customerName, setCustomerName] = useState(editingOrder?.customerName || "");
-  const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || "");
-  const [deliveryAddress, setDeliveryAddress] = useState(editingOrder?.deliveryAddress || "");
-  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(editingOrder?.deliveryDate);
+  
+  // Load saved draft on initial mount (only for new orders)
+  const initialDraft = !editingOrder ? loadFormDraft() : null;
+  
+  const [customerName, setCustomerName] = useState(editingOrder?.customerName || initialDraft?.customerName || "");
+  const [phoneNumber, setPhoneNumber] = useState(editingOrder?.phoneNumber || initialDraft?.phoneNumber || "");
+  const [deliveryAddress, setDeliveryAddress] = useState(editingOrder?.deliveryAddress || initialDraft?.deliveryAddress || "");
+  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
+    editingOrder?.deliveryDate || (initialDraft?.deliveryDate ? new Date(initialDraft.deliveryDate) : undefined)
+  );
   const [items, setItems] = useState<OrderItem[]>(
-    editingOrder?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
+    editingOrder?.items || initialDraft?.items || [{ product: "", quantity: 1, unitPrice: 0, total: 0 }]
   );
   const [openCombobox, setOpenCombobox] = useState<number | null>(null);
   const [showProductGrid, setShowProductGrid] = useState<number | null>(null);
   const [gridSearchTerm, setGridSearchTerm] = useState("");
   const lastItemRef = useRef<HTMLDivElement>(null);
+
+  // Save form draft whenever form data changes (only for new orders)
+  useEffect(() => {
+    if (!editingOrder) {
+      const draft: FormDraft = {
+        customerName,
+        phoneNumber,
+        deliveryAddress,
+        deliveryDate: deliveryDate?.toISOString() || null,
+        items,
+      };
+      saveFormDraft(draft);
+    }
+  }, [customerName, phoneNumber, deliveryAddress, deliveryDate, items, editingOrder]);
 
   // Update form when editingOrder changes
   useEffect(() => {
@@ -47,12 +103,6 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       setDeliveryAddress(editingOrder.deliveryAddress || "");
       setDeliveryDate(editingOrder.deliveryDate);
       setItems(editingOrder.items);
-    } else {
-      setCustomerName("");
-      setPhoneNumber("");
-      setDeliveryAddress("");
-      setDeliveryDate(undefined);
-      setItems([{ product: "", quantity: 1, unitPrice: 0, total: 0 }]);
     }
   }, [editingOrder]);
 
@@ -332,8 +382,9 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       onAddOrder(order);
     }
     
-    // Don't reset form in edit mode to prevent confusion
+    // Clear saved draft and reset form for new orders
     if (!editingOrder) {
+      clearFormDraft();
       setCustomerName("");
       setPhoneNumber("");
       setDeliveryAddress("");
