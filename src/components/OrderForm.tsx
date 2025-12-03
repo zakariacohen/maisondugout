@@ -79,6 +79,9 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [openCombobox, setOpenCombobox] = useState<number | null>(null);
   const [showProductGrid, setShowProductGrid] = useState<number | null>(null);
   const [gridSearchTerm, setGridSearchTerm] = useState("");
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("");
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
   // Save form draft whenever form data changes (only for new orders)
@@ -147,6 +150,46 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       setItems(newItems);
       setShowProductGrid(null); // Close the grid after selection
       setGridSearchTerm(""); // Reset search term
+      setNewProductName("");
+      setNewProductPrice("");
+    }
+  };
+
+  const handleAddNewProduct = async (index: number) => {
+    if (!newProductName.trim()) {
+      toast.error("Veuillez entrer un nom de produit");
+      return;
+    }
+    const price = parseFloat(newProductPrice) || 0;
+    if (price <= 0) {
+      toast.error("Veuillez entrer un prix valide");
+      return;
+    }
+
+    setIsAddingProduct(true);
+    try {
+      const newProduct = await addProduct({ name: newProductName.trim(), price });
+      
+      // Select the newly created product
+      const newItems = [...items];
+      newItems[index] = {
+        ...newItems[index],
+        product: newProduct.name,
+        unitPrice: newProduct.price,
+        total: newItems[index].quantity * newProduct.price,
+      };
+      setItems(newItems);
+      
+      toast.success(`Produit "${newProduct.name}" ajouté`);
+      setShowProductGrid(null);
+      setGridSearchTerm("");
+      setNewProductName("");
+      setNewProductPrice("");
+    } catch (error) {
+      console.error('Error adding product:', error);
+      toast.error("Erreur lors de l'ajout du produit");
+    } finally {
+      setIsAddingProduct(false);
     }
   };
 
@@ -579,7 +622,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                   {item.product || "Choisir un produit"}
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+                                <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
                                 <DialogHeader>
                                   <DialogTitle>Choisir un produit</DialogTitle>
                                 </DialogHeader>
@@ -591,6 +634,38 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                     onChange={(e) => setGridSearchTerm(e.target.value)}
                                     className="w-full"
                                   />
+                                  
+                                  {/* Add New Product Section */}
+                                  <div className="bg-muted/50 rounded-lg p-3 border border-dashed border-primary/30">
+                                    <p className="text-xs text-muted-foreground mb-2">Nouveau produit?</p>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        type="text"
+                                        placeholder="Nom du produit"
+                                        value={newProductName}
+                                        onChange={(e) => setNewProductName(e.target.value)}
+                                        className="flex-1"
+                                      />
+                                      <Input
+                                        type="number"
+                                        placeholder="Prix"
+                                        value={newProductPrice}
+                                        onChange={(e) => setNewProductPrice(e.target.value)}
+                                        className="w-24"
+                                        min="0"
+                                        step="0.01"
+                                      />
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={() => handleAddNewProduct(index)}
+                                        disabled={isAddingProduct}
+                                      >
+                                        {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 overflow-y-auto flex-1">
                                     {products
                                       ?.filter((product) =>
