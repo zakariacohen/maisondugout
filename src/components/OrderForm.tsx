@@ -62,7 +62,7 @@ const clearFormDraft = () => {
 };
 
 export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdit, onScanningChange }: OrderFormProps) => {
-  const { data: products, isLoading } = useProducts();
+  const { data: products, isLoading, addProduct } = useProducts();
   
   // Load saved draft on initial mount (only for new orders)
   const initialDraft = !editingOrder ? loadFormDraft() : null;
@@ -150,7 +150,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     }
   };
 
-  const handleScanComplete = (scannedData: any) => {
+  const handleScanComplete = async (scannedData: any) => {
     console.log('Scanned data:', scannedData);
     
     // Update customer name if available
@@ -177,14 +177,16 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
     
     // Update items if available
     if (scannedData.items && Array.isArray(scannedData.items) && scannedData.items.length > 0) {
-      const newItems = scannedData.items.map((scannedItem: any) => {
+      const newProductsToAdd: string[] = [];
+      
+      const newItems = await Promise.all(scannedData.items.map(async (scannedItem: any) => {
         const product = products?.find(p => 
           p.name.toLowerCase().includes(scannedItem.product.toLowerCase()) ||
           scannedItem.product.toLowerCase().includes(p.name.toLowerCase())
         );
         
         // Use scanned quantity/price if available, otherwise use defaults
-        const quantity = scannedItem.quantity || (product ? 1 : 0);
+        const quantity = scannedItem.quantity || 1;
         const unitPrice = scannedItem.unitPrice || (product?.price || 0);
         const total = scannedItem.total || (quantity * unitPrice);
         
@@ -192,21 +194,35 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
           return {
             product: product.name,
             quantity,
-            unitPrice,
-            total,
+            unitPrice: unitPrice || product.price,
+            total: total || (quantity * product.price),
           };
         }
         
-        // If no matching product found, create item with scanned info
+        // If no matching product found, auto-add it to the catalog
+        const productName = scannedItem.product.trim();
+        if (productName && unitPrice > 0) {
+          try {
+            await addProduct({ name: productName, price: unitPrice });
+            newProductsToAdd.push(productName);
+          } catch (error) {
+            console.error('Error adding new product:', error);
+          }
+        }
+        
         return {
-          product: scannedItem.product,
+          product: productName,
           quantity,
           unitPrice,
           total,
         };
-      });
+      }));
       
       setItems(newItems);
+      
+      if (newProductsToAdd.length > 0) {
+        toast.success(`${newProductsToAdd.length} nouveau(x) produit(s) ajouté(s): ${newProductsToAdd.join(', ')}`);
+      }
     }
     
     toast.success("Informations extraites avec succès!");
