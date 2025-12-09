@@ -81,6 +81,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [gridSearchTerm, setGridSearchTerm] = useState("");
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
+  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both">("both");
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
@@ -168,7 +169,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
 
     setIsAddingProduct(true);
     try {
-      const newProduct = await addProduct({ name: newProductName.trim(), price });
+      const newProduct = await addProduct({ name: newProductName.trim(), price, category: newProductCategory });
       
       // Select the newly created product
       const newItems = [...items];
@@ -180,11 +181,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       };
       setItems(newItems);
       
-      toast.success(`Produit "${newProduct.name}" ajouté`);
+      toast.success(`Produit "${newProduct.name}" ajouté (${newProductCategory})`);
       setShowProductGrid(null);
       setGridSearchTerm("");
       setNewProductName("");
       setNewProductPrice("");
+      setNewProductCategory("both");
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error("Erreur lors de l'ajout du produit");
@@ -242,11 +244,11 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
           };
         }
         
-        // If no matching product found, auto-add it to the catalog
+        // If no matching product found, auto-add it to the catalog with 'both' category
         const productName = scannedItem.product.trim();
         if (productName && unitPrice > 0) {
           try {
-            await addProduct({ name: productName, price: unitPrice });
+            await addProduct({ name: productName, price: unitPrice, category: 'both' });
             newProductsToAdd.push(productName);
           } catch (error) {
             console.error('Error adding new product:', error);
@@ -638,31 +640,64 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                   {/* Add New Product Section */}
                                   <div className="bg-muted/50 rounded-lg p-3 border border-dashed border-primary/30">
                                     <p className="text-xs text-muted-foreground mb-2">Nouveau produit?</p>
-                                    <div className="flex gap-2">
-                                      <Input
-                                        type="text"
-                                        placeholder="Nom du produit"
-                                        value={newProductName}
-                                        onChange={(e) => setNewProductName(e.target.value)}
-                                        className="flex-1"
-                                      />
-                                      <Input
-                                        type="number"
-                                        placeholder="Prix"
-                                        value={newProductPrice}
-                                        onChange={(e) => setNewProductPrice(e.target.value)}
-                                        className="w-24"
-                                        min="0"
-                                        step="0.01"
-                                      />
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        onClick={() => handleAddNewProduct(index)}
-                                        disabled={isAddingProduct}
-                                      >
-                                        {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                                      </Button>
+                                    <div className="flex flex-col gap-2">
+                                      <div className="flex gap-2">
+                                        <Input
+                                          type="text"
+                                          placeholder="Nom du produit"
+                                          value={newProductName}
+                                          onChange={(e) => setNewProductName(e.target.value)}
+                                          className="flex-1"
+                                        />
+                                        <Input
+                                          type="number"
+                                          placeholder="Prix"
+                                          value={newProductPrice}
+                                          onChange={(e) => setNewProductPrice(e.target.value)}
+                                          className="w-24"
+                                          min="0"
+                                          step="0.01"
+                                        />
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <div className="flex gap-1 flex-1">
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "normal" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("normal")}
+                                            className="flex-1 text-xs"
+                                          >
+                                            Normal
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "ramadan" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("ramadan")}
+                                            className="flex-1 text-xs"
+                                          >
+                                            🌙 Ramadan
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "both" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("both")}
+                                            className="flex-1 text-xs"
+                                          >
+                                            Les deux
+                                          </Button>
+                                        </div>
+                                        <Button
+                                          type="button"
+                                          size="sm"
+                                          onClick={() => handleAddNewProduct(index)}
+                                          disabled={isAddingProduct}
+                                        >
+                                          {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                   
