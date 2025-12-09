@@ -83,6 +83,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [newProductPrice, setNewProductPrice] = useState("");
   const [newProductCategories, setNewProductCategories] = useState<string[]>(["normal"]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("all");
   const lastItemRef = useRef<HTMLDivElement>(null);
 
   // Save form draft whenever form data changes (only for new orders)
@@ -638,6 +639,29 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                     className="w-full"
                                   />
                                   
+                                  {/* Category Filter */}
+                                  <div className="flex gap-1 flex-wrap">
+                                    {[
+                                      { value: "all", label: "Tous", emoji: "📋" },
+                                      { value: "normal", label: "Normal", emoji: "📦" },
+                                      { value: "ramadan", label: "Ramadan", emoji: "🌙" },
+                                      { value: "traiteur", label: "Traiteur", emoji: "🍽️" },
+                                      { value: "service", label: "Service", emoji: "🛎️" },
+                                      { value: "autre_service", label: "Autre", emoji: "➕" },
+                                    ].map((cat) => (
+                                      <Button
+                                        key={cat.value}
+                                        type="button"
+                                        size="sm"
+                                        variant={selectedCategoryFilter === cat.value ? "default" : "outline"}
+                                        onClick={() => setSelectedCategoryFilter(cat.value)}
+                                        className="text-xs px-2"
+                                      >
+                                        {cat.emoji} {cat.label}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                  
                                   {/* Add New Product Section */}
                                   <div className="bg-muted/50 rounded-lg p-3 border border-dashed border-primary/30">
                                     <p className="text-xs text-muted-foreground mb-2">Nouveau produit?</p>
@@ -705,9 +729,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                   
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 overflow-y-auto flex-1">
                                     {products
-                                      ?.filter((product) =>
-                                        product.name.toLowerCase().includes(gridSearchTerm.toLowerCase())
-                                      )
+                                      ?.filter((product) => {
+                                        const matchesSearch = product.name.toLowerCase().includes(gridSearchTerm.toLowerCase());
+                                        if (selectedCategoryFilter === "all") return matchesSearch;
+                                        const categories = product.category ? product.category.split(",") : [];
+                                        return matchesSearch && categories.includes(selectedCategoryFilter);
+                                      })
                                       .map((product) => (
                                     <Card
                                       key={product.id}
