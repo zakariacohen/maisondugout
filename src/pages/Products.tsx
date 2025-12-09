@@ -231,8 +231,10 @@ const Products = () => {
                   <SelectContent>
                     <SelectItem value="normal">Produit Normal</SelectItem>
                     <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
-                    <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
                     <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
+                    <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
+                    <SelectItem value="service">Service 🛎️</SelectItem>
+                    <SelectItem value="autre_service">Autre Service ➕</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -304,22 +306,32 @@ const Products = () => {
                         })()}
                         <CardTitle className="text-base sm:text-lg truncate">{product.name}</CardTitle>
                       </div>
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {product.category === "ramadan" && (
-                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
-                            🌙 Ramadan
-                          </Badge>
-                        )}
-                        {product.category === "traiteur" && (
-                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
-                            🍽️ Traiteur
-                          </Badge>
-                        )}
-                        {product.category === "both" && (
-                          <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 border-amber-300">
-                            🌟 Les Deux
-                          </Badge>
-                        )}
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {product.category === "ramadan" && (
+                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
+                              🌙 Ramadan
+                            </Badge>
+                          )}
+                          {product.category === "traiteur" && (
+                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                              🍽️ Traiteur
+                            </Badge>
+                          )}
+                          {product.category === "service" && (
+                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 border-green-300">
+                              🛎️ Service
+                            </Badge>
+                          )}
+                          {product.category === "autre_service" && (
+                            <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 border-gray-300">
+                              ➕ Autre Service
+                            </Badge>
+                          )}
+                          {product.category === "both" && (
+                            <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 border-amber-300">
+                              🌟 Les Deux
+                            </Badge>
+                          )}
                         {isOutOfStock && (
                           <Badge variant="destructive" className="text-xs">
                             Rupture
@@ -406,8 +418,10 @@ const Products = () => {
                                 <SelectContent>
                                   <SelectItem value="normal">Produit Normal</SelectItem>
                                   <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
-                                  <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
                                   <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
+                                  <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
+                                  <SelectItem value="service">Service 🛎️</SelectItem>
+                                  <SelectItem value="autre_service">Autre Service ➕</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
