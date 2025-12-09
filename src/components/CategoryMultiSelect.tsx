@@ -41,12 +41,19 @@ export const CategoryMultiSelect = ({ value, onChange }: CategoryMultiSelectProp
               ? "bg-primary/10 border-primary"
               : "bg-muted/30 border-border hover:bg-muted/50"
           }`}
-          onClick={() => toggleCategory(cat.value)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCategory(cat.value);
+          }}
         >
           <Checkbox
             id={`cat-${cat.value}`}
             checked={selectedCategories.includes(cat.value)}
-            onCheckedChange={() => toggleCategory(cat.value)}
+            onCheckedChange={(checked) => {
+              toggleCategory(cat.value);
+            }}
+            onClick={(e) => e.stopPropagation()}
           />
           <Label
             htmlFor={`cat-${cat.value}`}

@@ -380,7 +380,11 @@ const Products = () => {
                               <Label>Catégories</Label>
                               <CategoryMultiSelect
                                 value={editingProduct?.category || "normal"}
-                                onChange={(value) => setEditingProduct(editingProduct ? {...editingProduct, category: value} : null)}
+                                onChange={(value) => {
+                                  if (editingProduct) {
+                                    setEditingProduct({...editingProduct, category: value});
+                                  }
+                                }}
                               />
                             </div>
                             <div className="space-y-2">
