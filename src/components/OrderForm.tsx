@@ -81,7 +81,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [gridSearchTerm, setGridSearchTerm] = useState("");
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both" | "traiteur" | "service">("both");
+  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both" | "traiteur" | "service" | "autre_service">("both");
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
@@ -705,6 +705,15 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                             className="text-xs px-2"
                                           >
                                             🛎️ Service
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "autre_service" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("autre_service")}
+                                            className="text-xs px-2"
+                                          >
+                                            ➕ Autre Service
                                           </Button>
                                         </div>
                                         <Button
