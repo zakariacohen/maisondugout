@@ -81,7 +81,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [gridSearchTerm, setGridSearchTerm] = useState("");
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both" | "traiteur" | "service" | "autre_service">("both");
+  const [newProductCategories, setNewProductCategories] = useState<string[]>(["normal"]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
@@ -169,7 +169,8 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
 
     setIsAddingProduct(true);
     try {
-      const newProduct = await addProduct({ name: newProductName.trim(), price, category: newProductCategory });
+      const categoryValue = newProductCategories.join(",");
+      const newProduct = await addProduct({ name: newProductName.trim(), price, category: categoryValue });
       
       // Select the newly created product
       const newItems = [...items];
@@ -181,12 +182,12 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
       };
       setItems(newItems);
       
-      toast.success(`Produit "${newProduct.name}" ajouté (${newProductCategory})`);
+      toast.success(`Produit "${newProduct.name}" ajouté`);
       setShowProductGrid(null);
       setGridSearchTerm("");
       setNewProductName("");
       setNewProductPrice("");
-      setNewProductCategory("both");
+      setNewProductCategories(["normal"]);
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error("Erreur lors de l'ajout du produit");
@@ -659,70 +660,44 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                           step="0.01"
                                         />
                                       </div>
-                                      <div className="flex gap-2 items-center">
-                                        <div className="flex gap-1 flex-1 flex-wrap">
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "normal" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("normal")}
-                                            className="text-xs px-2"
-                                          >
-                                            Normal
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "ramadan" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("ramadan")}
-                                            className="text-xs px-2"
-                                          >
-                                            🌙 Ramadan
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "both" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("both")}
-                                            className="text-xs px-2"
-                                          >
-                                            Les deux
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "traiteur" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("traiteur")}
-                                            className="text-xs px-2"
-                                          >
-                                            🍽️ Traiteur
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "service" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("service")}
-                                            className="text-xs px-2"
-                                          >
-                                            🛎️ Service
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            size="sm"
-                                            variant={newProductCategory === "autre_service" ? "default" : "outline"}
-                                            onClick={() => setNewProductCategory("autre_service")}
-                                            className="text-xs px-2"
-                                          >
-                                            ➕ Autre Service
-                                          </Button>
+                                      <div className="space-y-2">
+                                        <p className="text-xs text-muted-foreground">Catégories:</p>
+                                        <div className="grid grid-cols-2 gap-1">
+                                          {[
+                                            { value: "normal", label: "Normal", emoji: "📦" },
+                                            { value: "ramadan", label: "Ramadan", emoji: "🌙" },
+                                            { value: "traiteur", label: "Traiteur", emoji: "🍽️" },
+                                            { value: "service", label: "Service", emoji: "🛎️" },
+                                            { value: "autre_service", label: "Autre", emoji: "➕" },
+                                          ].map((cat) => (
+                                            <Button
+                                              key={cat.value}
+                                              type="button"
+                                              size="sm"
+                                              variant={newProductCategories.includes(cat.value) ? "default" : "outline"}
+                                              onClick={() => {
+                                                if (newProductCategories.includes(cat.value)) {
+                                                  const filtered = newProductCategories.filter(c => c !== cat.value);
+                                                  setNewProductCategories(filtered.length > 0 ? filtered : ["normal"]);
+                                                } else {
+                                                  setNewProductCategories([...newProductCategories, cat.value]);
+                                                }
+                                              }}
+                                              className="text-xs px-2 justify-start"
+                                            >
+                                              {cat.emoji} {cat.label}
+                                            </Button>
+                                          ))}
                                         </div>
                                         <Button
                                           type="button"
                                           size="sm"
+                                          className="w-full"
                                           onClick={() => handleAddNewProduct(index)}
                                           disabled={isAddingProduct}
                                         >
-                                          {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                          {isAddingProduct ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                                          Ajouter le produit
                                         </Button>
                                       </div>
                                     </div>

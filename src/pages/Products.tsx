@@ -11,13 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CategoryMultiSelect, getCategoryBadges, CATEGORY_STYLES } from "@/components/CategoryMultiSelect";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -220,23 +214,11 @@ const Products = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="category">Catégorie</Label>
-                <Select
+                <Label>Catégories</Label>
+                <CategoryMultiSelect
                   value={newProduct.category}
-                  onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner une catégorie" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="normal">Produit Normal</SelectItem>
-                    <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
-                    <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
-                    <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
-                    <SelectItem value="service">Service 🛎️</SelectItem>
-                    <SelectItem value="autre_service">Autre Service ➕</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(value) => setNewProduct({ ...newProduct, category: value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="stock">Stock Initial</Label>
@@ -307,31 +289,19 @@ const Products = () => {
                         <CardTitle className="text-base sm:text-lg truncate">{product.name}</CardTitle>
                       </div>
                         <div className="flex flex-wrap gap-1 mb-2">
-                          {product.category === "ramadan" && (
-                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
-                              🌙 Ramadan
-                            </Badge>
-                          )}
-                          {product.category === "traiteur" && (
-                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
-                              🍽️ Traiteur
-                            </Badge>
-                          )}
-                          {product.category === "service" && (
-                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 border-green-300">
-                              🛎️ Service
-                            </Badge>
-                          )}
-                          {product.category === "autre_service" && (
-                            <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 border-gray-300">
-                              ➕ Autre Service
-                            </Badge>
-                          )}
-                          {product.category === "both" && (
-                            <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 border-amber-300">
-                              🌟 Les Deux
-                            </Badge>
-                          )}
+                          {getCategoryBadges(product.category).map((cat) => {
+                            const style = CATEGORY_STYLES[cat];
+                            if (!style) return null;
+                            return (
+                              <Badge
+                                key={cat}
+                                variant="secondary"
+                                className={`text-xs ${style.bg} ${style.text} ${style.border}`}
+                              >
+                                {style.emoji} {style.label}
+                              </Badge>
+                            );
+                          })}
                         {isOutOfStock && (
                           <Badge variant="destructive" className="text-xs">
                             Rupture
@@ -407,23 +377,11 @@ const Products = () => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="edit-category">Catégorie</Label>
-                              <Select
+                              <Label>Catégories</Label>
+                              <CategoryMultiSelect
                                 value={editingProduct?.category || "normal"}
-                                onValueChange={(value) => setEditingProduct(editingProduct ? {...editingProduct, category: value} : null)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="normal">Produit Normal</SelectItem>
-                                  <SelectItem value="ramadan">Produit Ramadan 🌙</SelectItem>
-                                  <SelectItem value="both">Les Deux (Normal + Ramadan) 🌟</SelectItem>
-                                  <SelectItem value="traiteur">Service Traiteur 🍽️</SelectItem>
-                                  <SelectItem value="service">Service 🛎️</SelectItem>
-                                  <SelectItem value="autre_service">Autre Service ➕</SelectItem>
-                                </SelectContent>
-                              </Select>
+                                onChange={(value) => setEditingProduct(editingProduct ? {...editingProduct, category: value} : null)}
+                              />
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="edit-stock">Stock</Label>
