@@ -69,10 +69,12 @@ export default function PublicOrder() {
 
   const calculateTotal = () => items.reduce((sum, item) => sum + item.total, 0);
 
-  const filteredProducts = products?.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (product.category === 'normal' || product.category === 'both' || product.category === 'traiteur')
-  ) || [];
+  const filteredProducts = products?.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const categories = product.category ? product.category.split(",") : [];
+    const matchesCategory = categories.includes('normal') || categories.includes('both');
+    return matchesSearch && matchesCategory;
+  }) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
