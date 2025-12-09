@@ -81,7 +81,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
   const [gridSearchTerm, setGridSearchTerm] = useState("");
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both">("both");
+  const [newProductCategory, setNewProductCategory] = useState<"normal" | "ramadan" | "both" | "traiteur" | "service">("both");
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const lastItemRef = useRef<HTMLDivElement>(null);
 
@@ -660,13 +660,13 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                         />
                                       </div>
                                       <div className="flex gap-2 items-center">
-                                        <div className="flex gap-1 flex-1">
+                                        <div className="flex gap-1 flex-1 flex-wrap">
                                           <Button
                                             type="button"
                                             size="sm"
                                             variant={newProductCategory === "normal" ? "default" : "outline"}
                                             onClick={() => setNewProductCategory("normal")}
-                                            className="flex-1 text-xs"
+                                            className="text-xs px-2"
                                           >
                                             Normal
                                           </Button>
@@ -675,7 +675,7 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                             size="sm"
                                             variant={newProductCategory === "ramadan" ? "default" : "outline"}
                                             onClick={() => setNewProductCategory("ramadan")}
-                                            className="flex-1 text-xs"
+                                            className="text-xs px-2"
                                           >
                                             🌙 Ramadan
                                           </Button>
@@ -684,9 +684,27 @@ export const OrderForm = ({ onAddOrder, onUpdateOrder, editingOrder, onCancelEdi
                                             size="sm"
                                             variant={newProductCategory === "both" ? "default" : "outline"}
                                             onClick={() => setNewProductCategory("both")}
-                                            className="flex-1 text-xs"
+                                            className="text-xs px-2"
                                           >
                                             Les deux
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "traiteur" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("traiteur")}
+                                            className="text-xs px-2"
+                                          >
+                                            🍽️ Traiteur
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={newProductCategory === "service" ? "default" : "outline"}
+                                            onClick={() => setNewProductCategory("service")}
+                                            className="text-xs px-2"
+                                          >
+                                            🛎️ Service
                                           </Button>
                                         </div>
                                         <Button
