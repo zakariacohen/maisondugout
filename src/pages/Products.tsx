@@ -4,13 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Pencil, Trash2, Package, Loader2, AlertTriangle, icons, LucideIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2, icons, LucideIcon } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import { CategoryMultiSelect, getCategoryBadges, CATEGORY_STYLES } from "@/components/CategoryMultiSelect";
 import {
   AlertDialog,
@@ -55,8 +55,6 @@ const Products = () => {
     category: "normal"
   });
 
-  // Get low stock products
-  const lowStockProducts = products?.filter(p => p.stock <= p.stock_alert_threshold) || [];
 
   const handleAddProduct = async () => {
     if (!newProduct.name.trim() || !newProduct.price) {
@@ -141,26 +139,6 @@ const Products = () => {
 
   return (
     <div className="space-y-6">
-      {/* Low Stock Alerts */}
-      {lowStockProducts.length > 0 && (
-        <Alert variant="destructive" className="border-2">
-          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-          <AlertTitle className="font-bold text-sm sm:text-base">Alerte Stock Bas!</AlertTitle>
-          <AlertDescription>
-            <p className="mb-2 text-xs sm:text-sm">
-              {lowStockProducts.length} produit(s) nécessitent un réapprovisionnement:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
-              {lowStockProducts.map(product => (
-                <li key={product.id} className="font-medium">
-                  {product.name}: <span className="font-bold">{product.stock}</span> unité(s) 
-                  <span className="text-muted-foreground"> (seuil: {product.stock_alert_threshold})</span>
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -267,16 +245,10 @@ const Products = () => {
       ) : (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => {
-            const isLowStock = product.stock <= product.stock_alert_threshold;
-            const isOutOfStock = product.stock === 0;
-            
             return (
               <Card 
                 key={product.id} 
-                className={`shadow-md border-border/50 hover:shadow-xl transition-shadow ${
-                  isOutOfStock ? 'border-2 border-destructive' : 
-                  isLowStock ? 'border-2 border-yellow-500' : ''
-                }`}
+                className="shadow-md border-border/50 hover:shadow-xl transition-shadow"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
@@ -302,32 +274,10 @@ const Products = () => {
                               </Badge>
                             );
                           })}
-                        {isOutOfStock && (
-                          <Badge variant="destructive" className="text-xs">
-                            Rupture
-                          </Badge>
-                        )}
-                        {isLowStock && !isOutOfStock && (
-                          <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-600">
-                            Stock Bas
-                          </Badge>
-                        )}
                       </div>
                       <CardDescription className="text-lg sm:text-xl font-semibold text-primary">
                         {product.price.toFixed(2)} Dh
                       </CardDescription>
-                      <div className="mt-2 space-y-1">
-                        <p className={`text-sm font-medium ${
-                          isOutOfStock ? 'text-destructive' : 
-                          isLowStock ? 'text-yellow-600' : 
-                          'text-foreground'
-                        }`}>
-                          Stock: <span className="font-bold">{product.stock}</span> unités
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Seuil d'alerte: {product.stock_alert_threshold}
-                        </p>
-                      </div>
                     </div>
                     <div className="flex gap-1 flex-shrink-0">
                       <Dialog open={editingProduct?.id === product.id} onOpenChange={(open) => {
