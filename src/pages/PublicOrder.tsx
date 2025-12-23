@@ -11,6 +11,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { generateUuid } from "@/lib/uuid";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { SEO } from "@/components/SEO";
@@ -97,25 +98,25 @@ export default function PublicOrder() {
     setIsSubmitting(true);
 
     try {
-      // Insert order
-      const { data: orderData, error: orderError } = await supabase
+      // Insert order (use a client-generated id to avoid needing SELECT/RETURNING under RLS)
+      const orderId = generateUuid();
+      const { error: orderError } = await supabase
         .from('orders')
         .insert({
+          id: orderId,
           customer_name: customerName.trim(),
           phone_number: phoneNumber.trim(),
           delivery_address: deliveryAddress.trim(),
           total: calculateTotal(),
           delivered: false,
           delivery_date: deliveryDate?.toISOString() || null,
-        })
-        .select()
-        .single();
+        });
 
       if (orderError) throw orderError;
 
       // Insert order items
       const orderItems = items.map(item => ({
-        order_id: orderData.id,
+        order_id: orderId,
         product: item.productName,
         quantity: item.quantity,
         unit_price: item.unitPrice,
@@ -141,8 +142,13 @@ export default function PublicOrder() {
         setOrderSuccess(false);
       }, 3000);
     } catch (error) {
-      console.error('Error creating order:', error);
-      toast.error("Erreur lors de l'envoi de la commande. Veuillez réessayer.");
+      const message =
+        (typeof error === "object" && error && "message" in error && typeof (error as any).message === "string")
+          ? (error as any).message
+          : "Erreur inconnue";
+
+      console.error("Error creating order:", error);
+      toast.error(`Erreur lors de l'envoi: ${message}`);
     } finally {
       setIsSubmitting(false);
     }
