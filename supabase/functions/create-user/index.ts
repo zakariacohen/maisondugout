@@ -78,10 +78,24 @@ serve(async (req: Request) => {
       .from("profiles")
       .select("id")
       .eq("username", username.trim())
-      .single();
+      .maybeSingle();
 
     if (existingProfile) {
       return new Response(JSON.stringify({ error: "Ce nom d'utilisateur existe déjà" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Check if email already exists in profiles
+    const { data: existingEmail } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email")
+      .eq("email", email.trim())
+      .maybeSingle();
+
+    if (existingEmail) {
+      return new Response(JSON.stringify({ error: "Cet email existe déjà" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
