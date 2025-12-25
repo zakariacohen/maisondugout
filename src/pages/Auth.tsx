@@ -10,8 +10,10 @@ import logo from "@/assets/logo.jpg";
 
 const Auth = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -53,6 +55,55 @@ const Auth = () => {
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // Vérifier si le username existe déjà
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username.trim())
+        .single();
+
+      if (existingProfile) {
+        setIsLoading(false);
+        toast.error("Ce nom d'utilisateur existe déjà");
+        return;
+      }
+
+      // Créer le compte
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            username: username.trim()
+          }
+        }
+      });
+
+      if (error) {
+        setIsLoading(false);
+        if (error.message.includes("already registered")) {
+          toast.error("Cet email est déjà utilisé");
+        } else {
+          toast.error("Erreur lors de l'inscription");
+        }
+        return;
+      }
+
+      toast.success("Compte créé avec succès!");
+      navigate("/admin");
+    } catch (error) {
+      console.error("Erreur d'inscription:", error);
+      toast.error("Erreur lors de l'inscription");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-xl">
@@ -68,11 +119,11 @@ const Auth = () => {
             Maison du Goût
           </CardTitle>
           <CardDescription>
-            Connectez-vous pour accéder à la gestion des commandes
+            {isSignUp ? "Créer un nouveau compte admin" : "Connectez-vous pour accéder à la gestion des commandes"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username">Nom d'utilisateur</Label>
               <Input
@@ -86,6 +137,21 @@ const Auth = () => {
                 autoComplete="username"
               />
             </div>
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@maisondugout.ma"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  autoComplete="email"
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <Input
@@ -96,7 +162,7 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                autoComplete="current-password"
+                autoComplete={isSignUp ? "new-password" : "current-password"}
               />
             </div>
             <Button
@@ -104,9 +170,22 @@ const Auth = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Connexion..." : "Se connecter"}
+              {isLoading 
+                ? (isSignUp ? "Création..." : "Connexion...") 
+                : (isSignUp ? "Créer le compte" : "Se connecter")
+              }
             </Button>
           </form>
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-primary hover:underline"
+              disabled={isLoading}
+            >
+              {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un nouveau compte"}
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
