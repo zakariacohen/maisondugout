@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import HomePage from "./pages/HomePage";
 import PublicOrder from "./pages/PublicOrder";
 import PublicOrderRamadan from "./pages/PublicOrderRamadan";
+import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/commande" element={<PublicOrder />} />
           <Route path="/ramadan" element={<PublicOrderRamadan />} />
           <Route path="/admin" element={<Index />} />
+          <Route path="/admin/users" element={<Users />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
