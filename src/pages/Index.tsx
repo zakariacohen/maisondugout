@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { OrderForm } from "@/components/OrderForm";
 import { OrderList } from "@/components/OrderList";
 import { OrderCalendar } from "@/components/OrderCalendar";
-import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp, PackageX, ExternalLink } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Package, LogOut, CalendarDays, Menu, AlertCircle, BarChart3, TrendingUp, PackageX, ExternalLink, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Products from "@/pages/Products";
 import Dashboard from "@/pages/Dashboard";
 import Statistics from "@/pages/Statistics";
+import UsersPage from "@/pages/Users";
 import { useOrders } from "@/hooks/useOrders";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,7 +39,7 @@ export interface OrderItem {
 }
 
 const Index = () => {
-  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts" | "dashboard" | "statistics">("form");
+  const [view, setView] = useState<"form" | "pending" | "delivered" | "products" | "calendar" | "alerts" | "dashboard" | "statistics" | "users">("form");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -305,6 +306,15 @@ const Index = () => {
                 <span>Statistiques</span>
               </Button>
               <Button
+                variant={view === "users" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setView("users")}
+                className="transition-all px-3 sm:px-4 hidden lg:flex"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                <span>Utilisateurs</span>
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
@@ -374,6 +384,18 @@ const Index = () => {
                     >
                       <TrendingUp className="w-5 h-5 mr-3" />
                       Statistiques
+                    </Button>
+                    <Button
+                      variant={view === "users" ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => {
+                        setView("users");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <Users className="w-5 h-5 mr-3" />
+                      Utilisateurs
                     </Button>
                     <div className="border-t pt-3 mt-2">
                     </div>
@@ -468,6 +490,8 @@ const Index = () => {
             />
           ) : view === "statistics" ? (
             <Statistics />
+          ) : view === "users" ? (
+            <UsersPage />
           ) : (
             <Products />
           )}
