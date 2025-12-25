@@ -35,7 +35,7 @@ const Auth = () => {
       // Se connecter avec l'email trouvé
       const { error } = await supabase.auth.signInWithPassword({
         email: profileData.email,
-        password: profileData.password,
+        password,
       });
 
       if (error) {
