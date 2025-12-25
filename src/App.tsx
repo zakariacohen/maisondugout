@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import HomePage from "./pages/HomePage";
 import PublicOrder from "./pages/PublicOrder";
 import PublicOrderRamadan from "./pages/PublicOrderRamadan";
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/" element={<HomePage />} />
           <Route path="/acceuil" element={<HomePage />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/commande" element={<PublicOrder />} />
           <Route path="/ramadan" element={<PublicOrderRamadan />} />
           <Route path="/admin" element={<Index />} />
