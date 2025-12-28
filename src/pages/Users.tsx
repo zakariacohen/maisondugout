@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { UserPlus, Users as UsersIcon, Loader2, ArrowLeft, KeyRound } from "lucide-react";
+import { UserPlus, Users as UsersIcon, Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.jpg";
 
@@ -26,10 +25,6 @@ const Users = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(true);
-  const [resetDialogOpen, setResetDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
-  const [newPassword, setNewPassword] = useState("");
-  const [isResetting, setIsResetting] = useState(false);
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -100,49 +95,6 @@ const Users = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleResetPassword = async () => {
-    if (!selectedUser || !newPassword) return;
-
-    if (newPassword.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
-      return;
-    }
-
-    setIsResetting(true);
-
-    try {
-      const response = await supabase.functions.invoke("reset-password", {
-        body: { userId: selectedUser.id, newPassword },
-      });
-
-      if (response.error) {
-        toast.error(response.error.message || "Erreur lors de la réinitialisation");
-        return;
-      }
-
-      if (response.data?.error) {
-        toast.error(response.data.error);
-        return;
-      }
-
-      toast.success(`Mot de passe de ${selectedUser.username} réinitialisé`);
-      setResetDialogOpen(false);
-      setSelectedUser(null);
-      setNewPassword("");
-    } catch (error) {
-      console.error("Error resetting password:", error);
-      toast.error("Erreur lors de la réinitialisation");
-    } finally {
-      setIsResetting(false);
-    }
-  };
-
-  const openResetDialog = (profile: Profile) => {
-    setSelectedUser(profile);
-    setNewPassword("");
-    setResetDialogOpen(true);
   };
 
   if (authLoading) {
@@ -276,7 +228,6 @@ const Users = () => {
                       <TableHead>Nom d'utilisateur</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Date de création</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -291,16 +242,6 @@ const Users = () => {
                             year: "numeric",
                           })}
                         </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openResetDialog(profile)}
-                          >
-                            <KeyRound className="w-4 h-4 mr-1" />
-                            Reset MDP
-                          </Button>
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -310,46 +251,6 @@ const Users = () => {
           </Card>
         </div>
       </main>
-
-      {/* Reset Password Dialog */}
-      <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Réinitialiser le mot de passe</DialogTitle>
-            <DialogDescription>
-              Entrez le nouveau mot de passe pour {selectedUser?.username} ({selectedUser?.email})
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="reset-password">Nouveau mot de passe</Label>
-              <Input
-                id="reset-password"
-                type="password"
-                placeholder="••••••••"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                minLength={6}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setResetDialogOpen(false)}>
-              Annuler
-            </Button>
-            <Button onClick={handleResetPassword} disabled={isResetting || !newPassword}>
-              {isResetting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Réinitialisation...
-                </>
-              ) : (
-                "Réinitialiser"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
