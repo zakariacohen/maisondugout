@@ -81,8 +81,20 @@ export const OrderList = ({ orders, onDeleteOrder, onToggleDelivered, onEditOrde
     message += `*Maison du Goût*`;
 
     // Clean phone number and create WhatsApp link
-    const phoneNumber = order.phoneNumber.replace(/\D/g, '');
-    const whatsappUrl = `https://wa.me/212${phoneNumber.startsWith('0') ? phoneNumber.slice(1) : phoneNumber}?text=${encodeURIComponent(message)}`;
+    let phoneNumber = order.phoneNumber.replace(/\D/g, '');
+    
+    // Handle different phone number formats
+    if (phoneNumber.startsWith('212')) {
+      // Already has country code
+    } else if (phoneNumber.startsWith('00212')) {
+      phoneNumber = phoneNumber.slice(2); // Remove 00
+    } else if (phoneNumber.startsWith('0')) {
+      phoneNumber = '212' + phoneNumber.slice(1); // Replace leading 0 with 212
+    } else {
+      phoneNumber = '212' + phoneNumber; // Add country code
+    }
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
     toast.success("Message WhatsApp préparé");
